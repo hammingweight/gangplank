@@ -4,6 +4,7 @@ except ModuleNotFoundError:
     import tensorflow.keras as keras
 
 import numbers
+import time
 from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
 
 
@@ -53,6 +54,9 @@ class TrainTestExporter(keras.callbacks.Callback):
         else:
             push_to_gateway(self.pgw_addr, self.job, self.registry)
 
+    def on_train_begin(self, logs):
+        self.start_time = time.time()
+
     def on_epoch_end(self, epoch, logs):
         metrics = self._get_metrics(logs)
         for k in metrics:
@@ -74,6 +78,12 @@ class TrainTestExporter(keras.callbacks.Callback):
             "the number of model parameters/weights",
         )
         gauge.set(self.model.count_params())
+
+        gauge = self._get_gauge(
+            "gangplank_train_elapsed_time_in_seconds",
+            "the amount of time spent training the model",
+        )
+        gauge.set(time.time() - self.start_time)
 
         if self.handler:
             push_to_gateway(
