@@ -40,6 +40,12 @@ class TrainTestExporter(keras.callbacks.Callback):
                 gauge = self._get_gauge("gangplank_test_" + k, k)
                 gauge.set(v)
 
+        gauge = self._get_gauge(
+            "gangplank_test_model_parameter_count",
+            "the number of model parameters/weights",
+        )
+        gauge.set(self.model.count_params())
+
         if self.handler:
             push_to_gateway(
                 self.pgw_addr, self.job, self.registry, handler=self.handler
@@ -59,9 +65,15 @@ class TrainTestExporter(keras.callbacks.Callback):
         # We need a Counter but we want to set its value rather than increment
         # it, so we're using a Gauge.
         gauge = self._get_gauge(
-            "gangplank_epoch_total", "the number of completed training epochs"
+            "gangplank_train_epoch_total", "the number of completed training epochs"
         )
         gauge.set(epoch + 1)
+
+        gauge = self._get_gauge(
+            "gangplank_train_model_parameter_count",
+            "the number of model parameters/weights",
+        )
+        gauge.set(self.model.count_params())
 
         if self.handler:
             push_to_gateway(
