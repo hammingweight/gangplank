@@ -59,6 +59,7 @@ class TrainTestExporter(keras.callbacks.Callback):
         self.handler = handler
         self.registry = CollectorRegistry()
         self.gauges = {}
+        self.is_done = False
         # We need to distinguish between training and testing.
         # We'll set this to True if on_training_start is called.
         self.is_training = False
@@ -99,9 +100,15 @@ class TrainTestExporter(keras.callbacks.Callback):
             for w in layer_weights:
                 histogram.observe(w)
 
+    def on_test_begin(self, logs):
+        if self.is_done:
+            raise RuntimeError("cannot reuse this callback for a new run.")
+
     def on_test_end(self, logs):
         if self.is_training:
             return
+
+        self.is_done = True
 
         metrics = self._get_metrics(logs)
         for k in metrics:
@@ -116,6 +123,9 @@ class TrainTestExporter(keras.callbacks.Callback):
         self._push_to_gateway()
 
     def on_train_begin(self, logs):
+        if self.is_done:
+            raise RuntimeError("cannot reuse this callback for a new run.")
+
         self.is_training = True
         self.start_time = time.time()
 
@@ -145,6 +155,8 @@ class TrainTestExporter(keras.callbacks.Callback):
         self._push_to_gateway()
 
     def on_train_end(self, logs):
+        self.is_done = True
+
         if not self.histogram_buckets:
             return
 
