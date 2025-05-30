@@ -5,18 +5,46 @@ except ModuleNotFoundError:
 
 import numbers
 import time
-from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
+from prometheus_client import CollectorRegistry, Gauge, Histogram, push_to_gateway
+
+GANGPLANK_HISTOGRAM_BUCKETS = [
+    -0.9,
+    -0.8,
+    -0.7,
+    -0.6,
+    -0.5,
+    -0.4,
+    -0.3,
+    -0.2,
+    -0.1,
+    0.0,
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+]
 
 
 class TrainTestExporter(keras.callbacks.Callback):
-    def __init__(self, pgw_addr, job, metrics=None, handler=None):
+    def __init__(
+        self, pgw_addr, job, metrics=None, histogram_buckets=None, handler=None
+    ):
         super().__init__()
         self.pgw_addr = pgw_addr
         self.job = job
         self.metrics = metrics
+        self.histogram_buckets = histogram_buckets
         self.handler = handler
         self.registry = CollectorRegistry()
         self.gauges = {}
+        # We need to distinguish between training and testing.
+        # We'll set this to True if on_training_start is called.
+        self.is_training = False
 
     def _get_metrics(self, logs):
         if self.metrics is not None:
@@ -33,7 +61,19 @@ class TrainTestExporter(keras.callbacks.Callback):
             self.gauges[name] = Gauge(name, desc, registry=self.registry)
         return self.gauges[name]
 
+    def _push_weight_histogram(self, name):
+        histogram = Histogram(
+            name,
+            "model weights/parameters",
+            buckets=self.histogram_buckets,
+            registry=self.registry,
+        )
+        histogram.observe(0)
+
     def on_test_end(self, logs):
+        if self.is_training:
+            return
+
         metrics = self._get_metrics(logs)
         for k in metrics:
             v = logs.get(k)
@@ -47,6 +87,9 @@ class TrainTestExporter(keras.callbacks.Callback):
         )
         gauge.set(self.model.count_params())
 
+        if self.histogram_buckets:
+            self._push_weight_histogram("gangplank_test_model_weights")
+
         if self.handler:
             push_to_gateway(
                 self.pgw_addr, self.job, self.registry, handler=self.handler
@@ -55,6 +98,7 @@ class TrainTestExporter(keras.callbacks.Callback):
             push_to_gateway(self.pgw_addr, self.job, self.registry)
 
     def on_train_begin(self, logs):
+        self.is_training = True
         self.start_time = time.time()
 
     def on_epoch_end(self, epoch, logs):
@@ -80,10 +124,23 @@ class TrainTestExporter(keras.callbacks.Callback):
         gauge.set(self.model.count_params())
 
         gauge = self._get_gauge(
-            "gangplank_train_elapsed_time_in_seconds",
+            "gangplank_train_elapsed_time_seconds",
             "the amount of time spent training the model",
         )
         gauge.set(time.time() - self.start_time)
+
+        if self.handler:
+            push_to_gateway(
+                self.pgw_addr, self.job, self.registry, handler=self.handler
+            )
+        else:
+            push_to_gateway(self.pgw_addr, self.job, self.registry)
+
+    def on_train_end(self, logs):
+        if not self.histogram_buckets:
+            return
+
+        self._push_weight_histogram("gangplank_train_model_weights")
 
         if self.handler:
             push_to_gateway(
