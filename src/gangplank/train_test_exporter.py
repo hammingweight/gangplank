@@ -8,7 +8,8 @@ import time
 from prometheus_client import CollectorRegistry, Gauge, Histogram, push_to_gateway
 
 HISTOGRAM_WEIGHT_BUCKETS_1_0 = [
-    -1.0 - 0.9,
+    -1.0,
+    -0.9,
     -0.8,
     -0.7,
     -0.6,
