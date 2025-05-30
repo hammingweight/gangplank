@@ -1,3 +1,58 @@
+"""
+    This module defines the `TrainTestExporter` Keras callback for exporting training
+    and testing metrics to a Prometheus Pushgateway.
+
+    Classes:
+        TrainTestExporter:
+            A Keras callback that collects and pushes model metrics, parameter counts,
+            and optionally weight histograms to a Prometheus Pushgateway during training
+            and testing.
+
+    Constants:
+        HISTOGRAM_WEIGHT_BUCKETS_1_0: List of float
+            Buckets for histogramming model weights in the range [-1.0, 1.0].
+        HISTOGRAM_WEIGHT_BUCKETS_0_3: List of float
+            Buckets for histogramming model weights in the range [-0.3, 0.3].
+
+    TrainTestExporter Args:
+        pgw_addr (str):
+            The address of the Prometheus Pushgateway.
+        job (str):
+            The job name for the metrics.
+        metrics (list, optional):
+            List of metric names to export. If None, all numeric metrics in logs are
+            exported.
+        histogram_buckets (list, optional):
+            List of bucket edges for histogramming model weights. If None, histograms
+            are not exported.
+        handler (callable, optional):
+            Optional handler for push_to_gateway.
+
+    Methods:
+        on_train_begin(logs):
+            Called at the beginning of training. Initializes training state and timer.
+        on_epoch_end(epoch, logs):
+            Called at the end of each epoch. Exports training metrics, parameter count,
+            epoch count, and elapsed time.
+        on_train_end(logs):
+            Called at the end of training. Exports model weight histogram if enabled.
+        on_test_begin(logs):
+            Called at the beginning of testing. Prevents reuse of the callback.
+        on_test_end(logs):
+            Called at the end of testing. Exports test metrics, parameter count, and
+            model weight histogram if enabled.
+
+    Private Methods:
+        _get_metrics(logs):
+            Determines which metrics to export from logs.
+        _get_gauge(name, desc):
+            Retrieves or creates a Prometheus Gauge metric.
+        _push_to_gateway():
+            Pushes collected metrics to the Prometheus Pushgateway.
+        _construct_histogram(name):
+            Constructs and populates a Prometheus Histogram of model weights.
+"""
+
 try:
     import keras
 except ModuleNotFoundError:
