@@ -68,7 +68,11 @@ class TrainTestExporter(keras.callbacks.Callback):
             buckets=self.histogram_buckets,
             registry=self.registry,
         )
-        histogram.observe(0)
+        weights = self.model.get_weights()
+        for i in range(len(weights)):
+            layer_weights = weights[i].flatten()
+            for w in layer_weights:
+                histogram.observe(w)
 
     def on_test_end(self, logs):
         if self.is_training:
