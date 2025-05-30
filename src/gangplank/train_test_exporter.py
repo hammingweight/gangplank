@@ -7,8 +7,8 @@ import numbers
 import time
 from prometheus_client import CollectorRegistry, Gauge, Histogram, push_to_gateway
 
-GANGPLANK_HISTOGRAM_BUCKETS = [
-    -0.9,
+HISTOGRAM_WEIGHT_BUCKETS_1_0 = [
+    -1.0 - 0.9,
     -0.8,
     -0.7,
     -0.6,
@@ -27,6 +27,23 @@ GANGPLANK_HISTOGRAM_BUCKETS = [
     0.7,
     0.8,
     0.9,
+    1.0,
+]
+
+HISTOGRAM_WEIGHT_BUCKETS_0_3 = [
+    -0.30,
+    -0.25,
+    -0.20,
+    -0.15,
+    -0.10,
+    -0.05,
+    0.00,
+    0.05,
+    0.10,
+    0.15,
+    0.20,
+    0.25,
+    0.30,
 ]
 
 
@@ -61,7 +78,15 @@ class TrainTestExporter(keras.callbacks.Callback):
             self.gauges[name] = Gauge(name, desc, registry=self.registry)
         return self.gauges[name]
 
-    def _push_weight_histogram(self, name):
+    def _push_to_gateway(self):
+        if self.handler:
+            push_to_gateway(
+                self.pgw_addr, self.job, self.registry, handler=self.handler
+            )
+        else:
+            push_to_gateway(self.pgw_addr, self.job, self.registry)
+
+    def _construct_histogram(self, name):
         histogram = Histogram(
             name,
             "model weights/parameters",
@@ -82,24 +107,13 @@ class TrainTestExporter(keras.callbacks.Callback):
         for k in metrics:
             v = logs.get(k)
             if v is not None:
-                gauge = self._get_gauge("gangplank_test_" + k, k)
+                gauge = self._get_gauge("gangplank_train_" + k, k)
                 gauge.set(v)
 
-        gauge = self._get_gauge(
-            "gangplank_test_model_parameter_count",
-            "the number of model parameters/weights",
-        )
-        gauge.set(self.model.count_params())
-
         if self.histogram_buckets:
-            self._push_weight_histogram("gangplank_test_model_weights")
+            self._construct_histogram("gangplank_test_model_weights")
 
-        if self.handler:
-            push_to_gateway(
-                self.pgw_addr, self.job, self.registry, handler=self.handler
-            )
-        else:
-            push_to_gateway(self.pgw_addr, self.job, self.registry)
+        self._push_to_gateway()
 
     def on_train_begin(self, logs):
         self.is_training = True
@@ -117,38 +131,23 @@ class TrainTestExporter(keras.callbacks.Callback):
         # We need a Counter but we want to set its value rather than increment
         # it, so we're using a Gauge.
         gauge = self._get_gauge(
-            "gangplank_train_epoch_total", "the number of completed training epochs"
+            "gangplank_train_epochs_total", "the number of completed training epochs"
         )
         gauge.set(epoch + 1)
-
-        gauge = self._get_gauge(
-            "gangplank_train_model_parameter_count",
-            "the number of model parameters/weights",
-        )
-        gauge.set(self.model.count_params())
 
         gauge = self._get_gauge(
             "gangplank_train_elapsed_time_seconds",
             "the amount of time spent training the model",
         )
+
         gauge.set(time.time() - self.start_time)
 
-        if self.handler:
-            push_to_gateway(
-                self.pgw_addr, self.job, self.registry, handler=self.handler
-            )
-        else:
-            push_to_gateway(self.pgw_addr, self.job, self.registry)
+        self._push_to_gateway()
 
     def on_train_end(self, logs):
         if not self.histogram_buckets:
             return
 
-        self._push_weight_histogram("gangplank_train_model_weights")
+        self._construct_histogram("gangplank_train_model_weights")
 
-        if self.handler:
-            push_to_gateway(
-                self.pgw_addr, self.job, self.registry, handler=self.handler
-            )
-        else:
-            push_to_gateway(self.pgw_addr, self.job, self.registry)
+        self._push_to_gateway()
