@@ -150,7 +150,6 @@ class TrainTestExporter(keras.callbacks.Callback):
             "gangplank_train_elapsed_time_seconds",
             "the amount of time spent training the model",
         )
-
         gauge.set(time.time() - self.start_time)
 
         self._push_to_gateway()
