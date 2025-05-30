@@ -91,15 +91,18 @@ class TrainTestExporter(keras.callbacks.Callback):
     def _construct_histogram(self, name):
         histogram = Histogram(
             name,
-            "model weights/parameters",
+            "model trainable weights",
             buckets=self.histogram_buckets,
             registry=self.registry,
         )
-        weights = self.model.get_weights()
-        for i in range(len(weights)):
-            layer_weights = weights[i].flatten()
-            for w in layer_weights:
-                histogram.observe(w)
+        for layer in self.model.layers:
+            if not layer.trainable:
+                continue
+            weights = layer.get_weights()
+            for weight in weights:
+                weight = weight.flatten()
+                for w in weight:
+                    histogram.observe(w)
 
     def on_test_begin(self, logs):
         if self.is_done:
@@ -115,8 +118,14 @@ class TrainTestExporter(keras.callbacks.Callback):
         for k in metrics:
             v = logs.get(k)
             if v is not None:
-                gauge = self._get_gauge("gangplank_train_" + k, k)
+                gauge = self._get_gauge("gangplank_test" + k, k)
                 gauge.set(v)
+
+        gauge = self._get_gauge(
+            "gangplank_test_model_parameters_count",
+            "the number of trainable and non-trainable model weights",
+        )
+        gauge.set(self.model.count_params())
 
         if self.histogram_buckets:
             self._construct_histogram("gangplank_test_model_weights")
@@ -138,11 +147,14 @@ class TrainTestExporter(keras.callbacks.Callback):
                 gauge = self._get_gauge("gangplank_train_" + k, k)
                 gauge.set(v)
 
-        # "total" is a suffix should be used with Counters not Gauges.
-        # We need a Counter but we want to set its value rather than increment
-        # it, so we're using a Gauge.
         gauge = self._get_gauge(
-            "gangplank_train_epochs_total", "the number of completed training epochs"
+            "gangplank_train_test_model_parameters_count",
+            "the number of trainable and not trainable model weights",
+        )
+        gauge.set(self.model.count_params())
+
+        gauge = self._get_gauge(
+            "gangplank_train_epochs_count", "the number of completed training epochs"
         )
         gauge.set(epoch + 1)
 
