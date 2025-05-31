@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 name = "gangplank"
 version = "0.1.0"
 authors = [
-  { name="CA Meijer", email="hammingweight@gmail.com" },
+  { name="Carl Meijer", email="hammingweight@gmail.com" },
 ]
 description = "Prometheus metrics collectors for Keras"
 readme = "README.md"
@@ -20,3 +20,10 @@ license-files = ["LICEN[CS]E*"]
 [project.urls]
 Homepage = "https://github.com/hammingweight/gangplank"
 Issues = "https://github.com/hammingweight/gangplank/issues"
+
+[tool.hatch.build]
+exclude = [
+  "/environment.yml",
+  "/examples",
+  "/tests",
+]

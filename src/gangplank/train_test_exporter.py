@@ -216,8 +216,8 @@ class TrainTestExporter(keras.callbacks.Callback):
                 gauge.set(v)
 
         gauge = self._get_gauge(
-            "gangplank_train_test_model_parameters_count",
-            "the number of trainable and not trainable model weights",
+            "gangplank_train_model_parameters_count",
+            "the number of trainable and non-trainable model weights",
         )
         gauge.set(self.model.count_params())
 
