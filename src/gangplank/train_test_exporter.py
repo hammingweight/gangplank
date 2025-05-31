@@ -14,7 +14,7 @@ Constants:
         Predefined histogram buckets ranging from -0.3 to 0.3 for model weights.
 
 Dependencies:
-    - keras or tensorflow.keras
+    - keras
     - prometheus_client
     - numbers
     - sys
@@ -27,10 +27,7 @@ Usage:
     Prometheus Pushgateway address.
 """
 
-try:
-    import keras
-except ModuleNotFoundError:
-    import tensorflow.keras as keras
+import keras
 
 import numbers
 import sys
