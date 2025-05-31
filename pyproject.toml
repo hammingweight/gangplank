@@ -3,7 +3,7 @@ requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 [project]
 name = "gangplank"
-version = "0.1.3"
+version = "0.1.4"
 authors = [
   { name="Carl Meijer", email="hammingweight@gmail.com" },
 ]
@@ -16,6 +16,10 @@ classifiers = [
 ]
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
+dependencies = [
+  "keras",
+  "prometheus_client",
+]
 
 [project.urls]
 Homepage = "https://github.com/hammingweight/gangplank"

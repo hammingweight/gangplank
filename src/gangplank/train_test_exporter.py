@@ -16,10 +16,6 @@ Constants:
 Dependencies:
     - keras
     - prometheus_client
-    - numbers
-    - sys
-    - time
-    - traceback
 
 Usage:
     Instantiate `TrainTestExporter` and pass it as a callback to Keras model training
