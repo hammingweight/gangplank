@@ -1,3 +1,32 @@
+"""
+This module defines the `TrainTestExporter` Keras callback for exporting training and
+testing metrics to a Prometheus Pushgateway.
+
+Classes:
+    TrainTestExporter:
+        A Keras callback that collects and pushes training and testing metrics, model
+        parameter counts, and optionally weight histograms to a Prometheus Pushgateway.
+
+Constants:
+    HISTOGRAM_WEIGHT_BUCKETS_1_0: List of float
+        Predefined histogram buckets ranging from -1.0 to 1.0 for model weights.
+    HISTOGRAM_WEIGHT_BUCKETS_0_3: List of float
+        Predefined histogram buckets ranging from -0.3 to 0.3 for model weights.
+
+Dependencies:
+    - keras or tensorflow.keras
+    - prometheus_client
+    - numbers
+    - sys
+    - time
+    - traceback
+
+Usage:
+    Instantiate `TrainTestExporter` and pass it as a callback to Keras model training
+    or evaluation. Metrics and model statistics will be pushed to the specified
+    Prometheus Pushgateway address.
+"""
+
 try:
     import keras
 except ModuleNotFoundError:
@@ -51,6 +80,19 @@ HISTOGRAM_WEIGHT_BUCKETS_0_3 = [
 
 
 class TrainTestExporter(keras.callbacks.Callback):
+    """
+    Initializes the exporter with configuration for Prometheus metrics collection.
+
+    Args:
+        pgw_addr: The address of the Prometheus gateway.
+        job: The job name for Prometheus metrics.
+        metrics (optional): A list of metrics to be exported.
+        histogram_buckets (optional): Custom buckets for Prometheus histograms.
+        handler (optional): An authentication handler for the gateway.
+        ignore_exceptions (bool, optional): Whether to ignore exceptions during metric
+            export. Defaults to True.
+    """
+
     def __init__(
         self,
         pgw_addr,
@@ -75,7 +117,7 @@ class TrainTestExporter(keras.callbacks.Callback):
         self.is_training = False
 
     @staticmethod
-    def exception_handler(func):
+    def _exception_handler(func):
         def wrapper_func(self, *args, **kwargs):
             try:
                 return func(self, *args, **kwargs)
@@ -126,12 +168,12 @@ class TrainTestExporter(keras.callbacks.Callback):
                 for w in weight:
                     histogram.observe(w)
 
-    @exception_handler
+    @_exception_handler
     def on_test_begin(self, logs):
         if self.is_done:
             raise RuntimeError("cannot reuse this callback for a new run.")
 
-    @exception_handler
+    @_exception_handler
     def on_test_end(self, logs):
         if self.is_training:
             return
@@ -156,7 +198,7 @@ class TrainTestExporter(keras.callbacks.Callback):
 
         self._push_to_gateway()
 
-    @exception_handler
+    @_exception_handler
     def on_train_begin(self, logs):
         if self.is_done:
             raise RuntimeError("cannot reuse this callback for a new run.")
@@ -164,7 +206,7 @@ class TrainTestExporter(keras.callbacks.Callback):
         self.is_training = True
         self.start_time = time.time()
 
-    @exception_handler
+    @_exception_handler
     def on_epoch_end(self, epoch, logs):
         metrics = self._get_metrics(logs)
         for k in metrics:
@@ -192,7 +234,7 @@ class TrainTestExporter(keras.callbacks.Callback):
 
         self._push_to_gateway()
 
-    @exception_handler
+    @_exception_handler
     def on_train_end(self, logs):
         self.is_done = True
 
