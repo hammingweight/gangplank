@@ -31,6 +31,9 @@ import time
 import traceback
 from prometheus_client import CollectorRegistry, Gauge, Histogram, push_to_gateway
 
+"""
+Histogram buckets in the interval [-1.0, +1.0] for a model's weights.
+"""
 HISTOGRAM_WEIGHT_BUCKETS_1_0 = [
     -1.0,
     -0.9,
@@ -55,6 +58,9 @@ HISTOGRAM_WEIGHT_BUCKETS_1_0 = [
     1.0,
 ]
 
+"""
+Histogram buckets in the interval [-0.3, +0.3] for a model's weights.
+"""
 HISTOGRAM_WEIGHT_BUCKETS_0_3 = [
     -0.30,
     -0.25,
