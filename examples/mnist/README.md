@@ -18,6 +18,19 @@ that specifies the address of the Prometheus PGW and that the job name is "mnist
 You can run the training script by running `python3 train.py`. Once the first training epoch has finished, you should be able to retrieve some
 metrics with the prefix `gangplank_train` from the PGW
 
+```
+$ curl -s http://localhost:9091/metrics | grep gangplank_train | grep -v '#' 
+gangplank_train_accuracy{instance="",job="mnist"} 0.9448703527450562
+gangplank_train_elapsed_time_seconds{instance="",job="mnist"} 53.397014141082764
+gangplank_train_epochs_count{instance="",job="mnist"} 1
+gangplank_train_loss{instance="",job="mnist"} 0.18397289514541626
+gangplank_train_model_parameters_count{instance="",job="mnist"} 104202
+gangplank_train_val_accuracy{instance="",job="mnist"} 0.9835000038146973
+gangplank_train_val_loss{instance="",job="mnist"} 0.05415859818458557
+```
+The metrics include the training and validation loss and accuracy, the number of completed epochs and the running time and the number of weights (parameter) in the model.
+
+
 ## Testing the model
 The training code saves the best model to a file, "mnist_convnet.keras". The testing [code](https://github.com/hammingweight/gangplank/blob/main/examples/mnist/test.py)
 loads the model and evaluates the model using the MNIST test data.
