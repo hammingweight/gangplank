@@ -9,6 +9,9 @@ model = keras.models.load_model("mnist_convnet.keras")
 test_images = test_images.reshape((10000, 28, 28, 1))
 test_images = test_images.astype("float32") / 255
 
+# A callback that will:
+#   Create a histogram of model weights in the interval [-0.3, +0.3]
+#   Abort the test run if an exception occurs (e.g. the PGW is down)
 callback = gangplank.TrainTestExporter(
     "http://localhost:9091",
     "mnist",
@@ -16,4 +19,5 @@ callback = gangplank.TrainTestExporter(
     ignore_exceptions=False,
 )
 
+# Now, test the model
 model.evaluate(test_images, test_labels, callbacks=[callback])
