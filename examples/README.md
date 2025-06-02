@@ -1,5 +1,5 @@
 # Examples
-## Running Prometheus and the Prometheusgateway (PGW)
+## Running Prometheus and the Pushgateway (PGW)
 The Gangplank examples require that you run a Prometheus server bound to `127.0.0.1:9090` that can scrape a gateway that is
 bound to `127.0.0.1:9091`. If you've installed Docker, you can run
 

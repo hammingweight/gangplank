@@ -1,5 +1,5 @@
 # Config file for Gangplank to scrape a local
-# Prometheusgateway (PGW).
+# Pushgateway (PGW).
 global:
   scrape_interval: 10s
 
