@@ -58,7 +58,9 @@ The test/evaluation metrics are emitted with a `gangplank_test` prefix
 
 ```
 $ curl -s http://localhost:9091/metrics | grep -v '#' | grep gangplank_test
+gangplank_test_accuracy{instance="",job="mnist"} 0.9896000027656555
 gangplank_test_elapsed_time_seconds{instance="",job="mnist"} 2.2292304039001465
+gangplank_test_loss{instance="",job="mnist"} 0.041046421974897385
 gangplank_test_model_parameters_count{instance="",job="mnist"} 104202
 gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.3"} 1122
 gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.25"} 2456
@@ -77,8 +79,6 @@ gangplank_test_model_weights_bucket{instance="",job="mnist",le="+Inf"} 104202
 gangplank_test_model_weights_sum{instance="",job="mnist"} 0
 gangplank_test_model_weights_count{instance="",job="mnist"} 104202
 gangplank_test_model_weights_created{instance="",job="mnist"} 1.7488593562987614e+09
-gangplank_testaccuracy{instance="",job="mnist"} 0.9896000027656555
-gangplank_testloss{instance="",job="mnist"} 0.041046421974897385
 ```
 
 Some information that can be gleaned from the metrics is that:
