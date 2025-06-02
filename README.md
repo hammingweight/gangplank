@@ -49,6 +49,5 @@ pip install jax[cuda12]
 Similar comments apply to tensorflow and PyTorch.
 
 ## Examples
-Example of using Gangplank can be found in the [github repository](https://github.com/hammingweight/gangplank/tree/main/examples).
-
+An example of using Gangplank can be found in the [github repository](https://github.com/hammingweight/gangplank/tree/main/examples).
 
