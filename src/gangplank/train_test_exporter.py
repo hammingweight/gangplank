@@ -182,7 +182,7 @@ class TrainTestExporter(keras.callbacks.Callback):
         for k in metrics:
             v = logs.get(k)
             if v is not None:
-                gauge = self._get_gauge("gangplank_test" + k, k)
+                gauge = self._get_gauge("gangplank_test_" + k, k)
                 gauge.set(v)
 
         gauge = self._get_gauge(
