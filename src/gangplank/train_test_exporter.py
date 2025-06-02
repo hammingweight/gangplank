@@ -166,6 +166,11 @@ class TrainTestExporter(keras.callbacks.Callback):
         if self.is_done:
             raise RuntimeError("cannot reuse this callback for a new run.")
 
+        if self.is_training:
+            return
+
+        self.start_time = time.time()
+
     @_exception_handler
     def on_test_end(self, logs):
         if self.is_training:
@@ -185,6 +190,12 @@ class TrainTestExporter(keras.callbacks.Callback):
             "the number of trainable and non-trainable model weights",
         )
         gauge.set(self.model.count_params())
+
+        gauge = self._get_gauge(
+            "gangplank_test_elapsed_time_seconds",
+            "the amount of time spent testing the model",
+        )
+        gauge.set(time.time() - self.start_time)
 
         if self.histogram_buckets:
             self._construct_histogram("gangplank_test_model_weights")
