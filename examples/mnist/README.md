@@ -38,7 +38,7 @@ started to overfit the data after that.
 
 ## Testing the model
 The training code saves the best model to a file, "mnist_convnet.keras". The testing [code](https://github.com/hammingweight/gangplank/blob/main/examples/mnist/test.py)
-loads the model and evaluates the model using the MNIST test data. The code instantiates a `TrainTestExporter`
+loads the model and evaluates the model using the MNIST test data (10,000 samples). The code instantiates a `TrainTestExporter`
 
 ```
 callback = gangplank.TrainTestExporter(
@@ -82,7 +82,7 @@ gangplank_test_model_weights_created{instance="",job="mnist"} 1.7488593562987614
 ```
 
 Some information that can be gleaned from the metrics is that:
- * It took 2.23 seconds to evaluate the 10000 test samples
+ * It took 2.23 seconds to evaluate the 10,000 test samples
  * The model accuracy is 98.96%
- * There are 104202 model weights
+ * There are 104,202 model weights
  * 1122 model weights have a value less than -0.3
