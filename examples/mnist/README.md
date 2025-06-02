@@ -28,12 +28,15 @@ gangplank_train_model_parameters_count{instance="",job="mnist"} 104202
 gangplank_train_val_accuracy{instance="",job="mnist"} 0.9835000038146973
 gangplank_train_val_loss{instance="",job="mnist"} 0.05415859818458557
 ```
-The metrics include the training and validation loss and accuracy, the number of completed epochs and the running time and the number of weights (parameter) in the model.
+The metrics include the training and validation loss and accuracy, the number of completed epochs, the running time and the number of weights (parameter) in the model.
+
+The Prometheus server dashboard can be used to query or view the metrics. For example, the image shows that validation loss reached a minimum at 09:38 (epoch 13) and the training
+started to overfit the data after that.
+
+![Training validation loss](./train_val_loss.png)
 
 
 ## Testing the model
 The training code saves the best model to a file, "mnist_convnet.keras". The testing [code](https://github.com/hammingweight/gangplank/blob/main/examples/mnist/test.py)
 loads the model and evaluates the model using the MNIST test data.
-
-
 
