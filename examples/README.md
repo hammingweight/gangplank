@@ -1,13 +1,7 @@
 # Examples
 ## Running Prometheus and the Pushgateway (PGW)
 The Gangplank examples require that you run a Prometheus server bound to `127.0.0.1:9090` that can scrape a gateway that is
-bound to `127.0.0.1:9091`. If you've installed Docker, you can run
-
-```
-./start_prometheus.sh
-```
-
-to start both the server and the gateway
+bound to `127.0.0.1:9091`. If you've installed Docker, you can run `./start_prometheus.sh` to start both the server and the gateway
 
 ```
 $ ./start_prometheus.sh 
