@@ -6,7 +6,7 @@ that accompany his book ["Deep Learning with Python"]([https://www.manning.com/b
 The code in this directory instruments the model to push metrics to a Prometheus Pushgateway during training and testing.
 
 ## Training the model
-The [code to train the model](https://github.com/hammingweight/gangplank/blob/main/examples/mnist/train.py) creates a 
+The [code](https://github.com/hammingweight/gangplank/blob/main/examples/mnist/train.py) to train the model creates a 
 [`gangplank.TrainTestExporter`](https://github.com/hammingweight/gangplank/blob/5bd199e195e89293678fa53fce0592fe1f3a4efd/examples/mnist/train.py#L36C5-L36C32)
 
 ```
