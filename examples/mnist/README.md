@@ -38,5 +38,52 @@ started to overfit the data after that.
 
 ## Testing the model
 The training code saves the best model to a file, "mnist_convnet.keras". The testing [code](https://github.com/hammingweight/gangplank/blob/main/examples/mnist/test.py)
-loads the model and evaluates the model using the MNIST test data.
+loads the model and evaluates the model using the MNIST test data. The [`test.py` code](https://github.com/hammingweight/gangplank/blob/main/examples/mnist/test.py)
+instantiates a `TrainTestExporter`
 
+```
+callback = gangplank.TrainTestExporter(
+    "http://localhost:9091",
+    "mnist",
+    histogram_buckets=gangplank.HISTOGRAM_WEIGHT_BUCKETS_0_3,
+    ignore_exceptions=False,
+)
+```
+to:
+ * Emit a histogram of model weights in buckets in the interval [-0.3, 0.3]
+ * Abort the test run if an exception occurs (e.g. if the PGW is down)
+
+To test the model, run `python test.py`.
+
+The test/evaluation metrics are emitted with a `gangplank_test` prefix
+
+```
+$ curl -s http://localhost:9091/metrics | grep -v '#' | grep gangplank_test
+gangplank_test_elapsed_time_seconds{instance="",job="mnist"} 2.2292304039001465
+gangplank_test_model_parameters_count{instance="",job="mnist"} 104202
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.3"} 1122
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.25"} 2456
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.2"} 5280
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.15"} 10759
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.1"} 20734
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.05"} 36836
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="0"} 58190
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.05"} 77984
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.1"} 91480
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.15"} 99129
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.2"} 102498
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.25"} 103643
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.3"} 104013
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="+Inf"} 104202
+gangplank_test_model_weights_sum{instance="",job="mnist"} 0
+gangplank_test_model_weights_count{instance="",job="mnist"} 104202
+gangplank_test_model_weights_created{instance="",job="mnist"} 1.7488593562987614e+09
+gangplank_testaccuracy{instance="",job="mnist"} 0.9896000027656555
+gangplank_testloss{instance="",job="mnist"} 0.041046421974897385
+```
+
+Some information that can be gleaned from the metrics is that:
+ * It took 2.23 seconds to evaluate the 10000 test samples
+ * The model accuracy is 98.96%
+ * There are 104202 model weights
+ * 1122 model weights have a value less than -0.3
