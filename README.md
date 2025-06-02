@@ -30,7 +30,7 @@ Gangplank can be installed from PyPI
 pip install gangplank
 ```
 
-The installation will also install Keras. Keras needs a tensor arithmetic backed like tensorflow, JAX or PyTorch. You can install a
+The installation will also install Keras. Keras needs a tensor arithmetic backend like tensorflow, JAX or PyTorch. You can install a
 backend at the same time as installing Gangplank by running one of the following
 
 ```
