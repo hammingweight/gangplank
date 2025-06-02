@@ -38,8 +38,7 @@ started to overfit the data after that.
 
 ## Testing the model
 The training code saves the best model to a file, "mnist_convnet.keras". The testing [code](https://github.com/hammingweight/gangplank/blob/main/examples/mnist/test.py)
-loads the model and evaluates the model using the MNIST test data. The [`test.py` code](https://github.com/hammingweight/gangplank/blob/main/examples/mnist/test.py)
-instantiates a `TrainTestExporter`
+loads the model and evaluates the model using the MNIST test data. The code instantiates a `TrainTestExporter`
 
 ```
 callback = gangplank.TrainTestExporter(
