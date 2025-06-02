@@ -15,3 +15,6 @@ c3b0e9147f15   prom/prometheus    "/bin/prometheus --c…"   11 seconds ago   Up
 Running `curl http://127.0.0.1:9090/metrics` and `curl http://127.0.0.1:9091/metrics` should return the metrics exposed by the
 server and the gateway.
 
+## Usage examples
+[MNIST handwritten digit recognition](https://github.com/hammingweight/gangplank/tree/main/examples/mnist)
+
