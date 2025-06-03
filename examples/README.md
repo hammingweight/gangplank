@@ -18,13 +18,13 @@ server and the gateway.
 ## The `TrainTestExporter` Class
 The `TrainTestExporter` class extends `keras.callbacks.Callback` to push metrics to a pushgateway. The class's constructor
 takes two mandatory arguments and four optional arguments:
- * `pgw_addr` is the address of the pushgateway (e.g. 127.0.0.1:9091)
- * `job` is a name to attach to the metrics
- * `metrics` is an optional argument to specify which metrics to emit. If omitted, all available metrics are exported
+ * `pgw_addr` is the address of the pushgateway (e.g. 127.0.0.1:9091).
+ * `job` is a name to attach to the metrics.
+ * `metrics` is an optional argument to specify which metrics to emit. If omitted, all available metrics are exported.
  * `histogram_buckets` is an optional list of `float`s to specify the buckets that the model's weights will be placed into (e.g. `[-0.3, -0.1, 0.1, 0.3]`). As a convenience, the constants
    `HISTOGRAM_WEIGHT_BUCKETS_1_0` and `HISTOGRAM_WEIGHT_BUCKETS_0_3` provide sensible choices for model weights in the intervals [-1.0, +1.0] and [-0.3, +0.3].
  * `handler` is an optional callback function that must be supplied if the pushgateway requires authentication; see [https://prometheus.github.io/client_python/exporting/pushgateway/](https://prometheus.github.io/client_python/exporting/pushgateway/)
- *  if the optional `ignore_exceptions` argument is `True`, the training or testing run will be aborted if the metrics can't be processed or pushed (e.g. the gateway is down.)
+ *  if the optional `ignore_exceptions` argument is `True`, the training or testing run will be aborted if the metrics can't be processed or pushed (e.g. the gateway is down).
 
 ## Usage examples
 [MNIST handwritten digit recognition](https://github.com/hammingweight/gangplank/tree/main/examples/mnist)
