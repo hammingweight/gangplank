@@ -26,6 +26,12 @@ takes two mandatory arguments and four optional arguments:
  * `handler` is an optional callback function that must be supplied if the pushgateway requires authentication; see [https://prometheus.github.io/client_python/exporting/pushgateway/](https://prometheus.github.io/client_python/exporting/pushgateway/)
  *  if the optional `ignore_exceptions` argument is `True`, the training or testing run will be aborted if the metrics can't be processed or pushed (e.g. the gateway is down).
 
+An example instantiation of a `TrainTestExporter` would be
+
+```
+callback = gangplank.TrainTestExporter("127.0.0.1:9091", "mnist", histogram_buckets=gangplank.HISTOGRAM_WEIGHT_BUCKETS_0_3)
+```
+
 ## Usage examples
 [MNIST handwritten digit recognition](https://github.com/hammingweight/gangplank/tree/main/examples/mnist)
 
