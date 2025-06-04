@@ -3,7 +3,7 @@ requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 [project]
 name = "gangplank"
-version = "0.2.5"
+version = "0.2.6"
 authors = [
   { name="Carl Meijer", email="hammingweight@gmail.com" },
 ]
