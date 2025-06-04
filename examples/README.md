@@ -1,5 +1,5 @@
 # Examples
-## Running Prometheus and the Pushgateway (PGW)
+## Running Prometheus and a Pushgateway (PGW) Locally
 The Gangplank examples require that you run a Prometheus server bound to `127.0.0.1:9090` that can scrape a gateway that is
 bound to `127.0.0.1:9091`. If you've installed Docker, you can run `./start_prometheus.sh` to start both the server and the gateway
 
@@ -16,7 +16,7 @@ Running `curl http://127.0.0.1:9090/metrics` and `curl http://127.0.0.1:9091/met
 server and the gateway.
 
 ## The `TrainTestExporter` Class
-The `TrainTestExporter` class extends `keras.callbacks.Callback` to push metrics to a pushgateway. The class's constructor
+A `TrainTestExporter` object pushes metrics to a pushgateway. The class's constructor
 takes two mandatory arguments and four optional arguments:
  * `pgw_addr` is the address of the pushgateway (e.g. 127.0.0.1:9091).
  * `job` is a name to attach to the metrics.
