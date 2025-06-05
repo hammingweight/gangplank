@@ -24,7 +24,7 @@ takes two mandatory arguments and four optional arguments:
  * `histogram_buckets` is an optional list of `float`s to specify the buckets that the model's weights will be placed into (e.g. `[-0.3, -0.1, 0.1, 0.3]`). As a convenience, the constants
    `HISTOGRAM_WEIGHT_BUCKETS_1_0` and `HISTOGRAM_WEIGHT_BUCKETS_0_3` provide sensible choices for model weights in the intervals [-1.0, +1.0] and [-0.3, +0.3].
  * `handler` is an optional callback function that must be supplied if the pushgateway requires authentication; see [https://prometheus.github.io/client_python/exporting/pushgateway/](https://prometheus.github.io/client_python/exporting/pushgateway/)
- *  if the optional `ignore_exceptions` argument is `True`, the training or testing run will be aborted if the metrics can't be processed or pushed (e.g. the gateway is down).
+ *  if the optional `ignore_exceptions` argument is `False`, the training or testing run will be aborted if the metrics can't be processed or pushed (e.g. the gateway is down).
 
 An example instantiation of a `TrainTestExporter` would be
 
