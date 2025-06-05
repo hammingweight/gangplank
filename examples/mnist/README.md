@@ -48,7 +48,7 @@ callback = gangplank.TrainTestExporter(
     ignore_exceptions=False,
 )
 ```
-to:
+to
  * Emit a histogram of model weights in buckets in the interval [-0.3, 0.3]
  * Abort the test run if an exception occurs (e.g. if the PGW is down)
 
