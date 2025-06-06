@@ -2,7 +2,7 @@
 import gangplank
 import keras
 
-model = keras.models.load_model("mnist_convnet.keras")
+model = keras.models.load_model("../models/mnist_convnet.keras")
 
 # Load the MNIST test data (we're not interested in the training data)
 (_, _), (test_images, test_labels) = keras.datasets.mnist.load_data()

@@ -31,7 +31,7 @@ optimizer = "adam"
 # and a callback to push metrics to the Prometheus pushgateway.
 callbacks = [
     keras.callbacks.ModelCheckpoint(
-        filepath="mnist_convnet.keras", save_best_only=True, monitor="val_loss"
+        filepath="../models/mnist_convnet.keras", save_best_only=True, monitor="val_loss"
     ),
     gangplank.TrainTestExporter("127.0.0.1:9091", "mnist"),
 ]
