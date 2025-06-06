@@ -3,7 +3,7 @@ requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 [project]
 name = "gangplank"
-version = "0.2.7"
+version = "0.3.0"
 authors = [
   { name="Carl Meijer", email="hammingweight@gmail.com" },
 ]
@@ -19,6 +19,7 @@ license-files = ["LICEN[CS]E*"]
 dependencies = [
   "keras",
   "prometheus_client",
+  "alibi"
 ]
 [project.optional-dependencies]
 tensorflow = ["tensorflow"]

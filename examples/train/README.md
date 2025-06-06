@@ -1,13 +1,24 @@
-# MNIST Dataset
-This example trains and evaluates a convolutional neural network to classify the handwritten digits in the MNIST database.
-The model used is from one of François Chollet's [Jupyter notebooks](https://github.com/fchollet/deep-learning-with-python-notebooks/blob/master/chapter08_intro-to-dl-for-computer-vision.ipynb)
-that accompany his book ["Deep Learning with Python"]([https://www.manning.com/books/deep-learning-with-python](https://www.manning.com/books/deep-learning-with-python-second-edition)).
+# Training/Testing a Model
+## The `TrainTestExporter` Class
+A `TrainTestExporter` object pushes training and testing metrics to a pushgateway. The class's constructor
+takes two mandatory arguments and four optional arguments:
+ * `pgw_addr` is the address of the pushgateway (e.g. 127.0.0.1:9091).
+ * `job` is a name to attach to the metrics.
+ * `metrics` is an optional argument to specify which metrics to emit. If omitted, all available metrics are exported.
+ * `histogram_buckets` is an optional list of `float`s to specify the buckets that the model's weights will be placed into (e.g. `[-0.3, -0.1, 0.1, 0.3]`). As a convenience, the constants
+   `HISTOGRAM_WEIGHT_BUCKETS_1_0` and `HISTOGRAM_WEIGHT_BUCKETS_0_3` provide sensible choices for model weights in the intervals [-1.0, +1.0] and [-0.3, +0.3].
+ * `handler` is an optional callback function that must be supplied if the pushgateway requires authentication; see [https://prometheus.github.io/client_python/exporting/pushgateway/](https://prometheus.github.io/client_python/exporting/pushgateway/)
+ *  if the optional `ignore_exceptions` argument is `False`, the training or testing run will be aborted if the metrics can't be processed or pushed (e.g. the gateway is down).
 
-The code in this directory instruments the model to push metrics to a Prometheus Pushgateway during training and testing.
+An example instantiation of a `TrainTestExporter` would be
 
-## Training the model
-The [code](https://github.com/hammingweight/gangplank/blob/main/examples/train/train.py) to train the model creates a 
-[`gangplank.TrainTestExporter`](https://github.com/hammingweight/gangplank/blob/5bd199e195e89293678fa53fce0592fe1f3a4efd/examples/mnist/train.py#L36C5-L36C32)
+```
+callback = gangplank.TrainTestExporter("127.0.0.1:9091", "mnist", histogram_buckets=gangplank.HISTOGRAM_WEIGHT_BUCKETS_0_3)
+```
+
+## Training the Model
+The [code](https://github.com/hammingweight/gangplank/blob/main/examples/train/train.py) to train the model instantiates a 
+`gangplank.TrainTestExporter`
 
 ```
 gangplank.TrainTestExporter("127.0.0.1:9091", "mnist"),
@@ -36,7 +47,7 @@ started to overfit the data after that.
 ![Training validation loss](./train_val_loss.png)
 
 
-## Testing the model
+## Testing (Evaluating) the Model
 The training code saves the best model to a file, "mnist_convnet.keras". The testing [code](https://github.com/hammingweight/gangplank/blob/main/examples/mnist/test.py)
 loads the model and evaluates the model using the MNIST test data (10,000 samples). The code instantiates a `TrainTestExporter`
 

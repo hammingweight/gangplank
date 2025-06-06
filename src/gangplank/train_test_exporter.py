@@ -190,13 +190,13 @@ class TrainTestExporter(keras.callbacks.Callback):
 
         gauge = self._get_gauge(
             "gangplank_test_model_parameters_count",
-            "the number of trainable and non-trainable model weights",
+            "The number of trainable and non-trainable model weights",
         )
         gauge.set(self.model.count_params())
 
         gauge = self._get_gauge(
             "gangplank_test_elapsed_time_seconds",
-            "the amount of time spent testing the model",
+            "The amount of time spent testing the model",
         )
         gauge.set(time.time() - self.start_time)
 
@@ -224,18 +224,18 @@ class TrainTestExporter(keras.callbacks.Callback):
 
         gauge = self._get_gauge(
             "gangplank_train_model_parameters_count",
-            "the number of trainable and non-trainable model weights",
+            "The number of trainable and non-trainable model weights",
         )
         gauge.set(self.model.count_params())
 
         gauge = self._get_gauge(
-            "gangplank_train_epochs_count", "the number of completed training epochs"
+            "gangplank_train_epochs_count", "The number of completed training epochs"
         )
         gauge.set(epoch + 1)
 
         gauge = self._get_gauge(
             "gangplank_train_elapsed_time_seconds",
-            "the amount of time spent training the model",
+            "The amount of time spent training the model",
         )
         gauge.set(time.time() - self.start_time)
 
