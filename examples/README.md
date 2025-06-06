@@ -33,5 +33,5 @@ callback = gangplank.TrainTestExporter("127.0.0.1:9091", "mnist", histogram_buck
 ```
 
 ## Usage examples
-[MNIST handwritten digit recognition](https://github.com/hammingweight/gangplank/tree/main/examples/mnist)
+[MNIST handwritten digit recognition](https://github.com/hammingweight/gangplank/tree/main/examples/train)
 
