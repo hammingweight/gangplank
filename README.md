@@ -1,14 +1,12 @@
 # Gangplank
 ## Export Keras metrics to Prometheus
 [Prometheus](https://prometheus.io/) is a monitoring system that pulls metrics from applications and infrastructure.
-While polling works for applications that are continuously running, scraping metrics does not work well with batch jobs such as
-machine learning training or evaluation jobs. The Prometheus [Pushgateway](https://prometheus.io/docs/instrumenting/pushing/)
-is middleware that connects batch jobs to Prometheus.
+Gangplank is a Python package for exposing Keras model metrics to Prometheus. Metrics can be exported from training,
+evaluation and inference tasks. Training and testing metrics are exported using the Prometheus [Pushgateway](https://prometheus.io/docs/instrumenting/pushing/).
+Inference metrics are exposed by instrumenting a proxy of a Keras model.
 
-Gangplank is a Keras [callback](https://keras.io/api/callbacks/) for pushing Keras training and testing metrics to Prometheus via a
-pushgateway.
-
-### What metrics are exported?
+## What metrics are exported?
+### Training Metrics
 During training, the following metrics are exported:
  * The number of completed training epochs
  * The time spent training
@@ -17,11 +15,17 @@ During training, the following metrics are exported:
  * All metrics configured for the model (e.g. accuracy for a classification model or mean absolute error for a regression model)
  * (Optionally) A histogram of the model's trainable weights at the end of the training run
 
+### Testing (Evaluation) Metrics
 For testing (i.e. evaluation), the following metrics are exported:
  * The time spent testing
  * The model's loss
  * All metrics configured for the model (accuracy, mean absolute error, etc.)
  * (Optionally) A histogram of the model's trainable weights
+
+### Prediction (Inference) Metrics
+A deployed model can expose the following metrics:
+ * The total number of model predictions
+ * The time spent doing inference
 
 ## Installing Gangplank
 Gangplank can be installed from PyPI
