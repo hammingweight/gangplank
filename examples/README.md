@@ -15,23 +15,18 @@ c3b0e9147f15   prom/prometheus    "/bin/prometheus --c…"   11 seconds ago   Up
 Running `curl http://127.0.0.1:9090/metrics` and `curl http://127.0.0.1:9091/metrics` should return the metrics exposed by the
 server and the gateway.
 
-## The `TrainTestExporter` Class
-A `TrainTestExporter` object pushes metrics to a pushgateway. The class's constructor
-takes two mandatory arguments and four optional arguments:
- * `pgw_addr` is the address of the pushgateway (e.g. 127.0.0.1:9091).
- * `job` is a name to attach to the metrics.
- * `metrics` is an optional argument to specify which metrics to emit. If omitted, all available metrics are exported.
- * `histogram_buckets` is an optional list of `float`s to specify the buckets that the model's weights will be placed into (e.g. `[-0.3, -0.1, 0.1, 0.3]`). As a convenience, the constants
-   `HISTOGRAM_WEIGHT_BUCKETS_1_0` and `HISTOGRAM_WEIGHT_BUCKETS_0_3` provide sensible choices for model weights in the intervals [-1.0, +1.0] and [-0.3, +0.3].
- * `handler` is an optional callback function that must be supplied if the pushgateway requires authentication; see [https://prometheus.github.io/client_python/exporting/pushgateway/](https://prometheus.github.io/client_python/exporting/pushgateway/)
- *  if the optional `ignore_exceptions` argument is `False`, the training or testing run will be aborted if the metrics can't be processed or pushed (e.g. the gateway is down).
+The Prometheus server will also try to collect metrics from `127.0.0.1:8561`. The "predict" examples run a model for inference that has been instrumented
+to publish metrics on port 8561. 
 
-An example instantiation of a `TrainTestExporter` would be
+## MNIST Dataset
+The examples use a convolutional neural network (CNN) to classify the handwritten digits in the MNIST database.
+The CNN model is from one of François Chollet's [Jupyter notebooks](https://github.com/fchollet/deep-learning-with-python-notebooks/blob/master/chapter08_intro-to-dl-for-computer-vision.ipynb)
+that accompany his book ["Deep Learning with Python"]([https://www.manning.com/books/deep-learning-with-python](https://www.manning.com/books/deep-learning-with-python-second-edition)).
 
-```
-callback = gangplank.TrainTestExporter("127.0.0.1:9091", "mnist", histogram_buckets=gangplank.HISTOGRAM_WEIGHT_BUCKETS_0_3)
-```
+The examples instrument the model to push metrics to the Prometheus Pushgateway during training/testing and to publish metrics on port 8561 during inference.
+
 
 ## Usage examples
-[MNIST handwritten digit recognition](https://github.com/hammingweight/gangplank/tree/main/examples/train)
+[Training and Testing](https://github.com/hammingweight/gangplank/tree/main/examples/train)
+[Prediction/Inference](https://github.com/hammingweight/gangplank/tree/main/examples/predict)
 
