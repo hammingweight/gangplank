@@ -15,8 +15,10 @@ c3b0e9147f15   prom/prometheus    "/bin/prometheus --c…"   11 seconds ago   Up
 Running `curl http://127.0.0.1:9090/metrics` and `curl http://127.0.0.1:9091/metrics` should return the metrics exposed by the
 server and the gateway.
 
-The Prometheus server will also try to collect metrics from `127.0.0.1:8561`. The "predict" examples run a model for inference that has been instrumented
-to publish metrics on port 8561. 
+The training/testing examples push metrics to the PGW and the Prometheus server scrapes the metrics from the gateway.
+
+The Prometheus server will also try to collect metrics from `127.0.0.1:8561`. The "predict" examples run a model for inference that starts an HTTP server that exposes
+the inference metrics (on port 8561). 
 
 ## MNIST Dataset
 The examples use a convolutional neural network (CNN) to classify the handwritten digits in the MNIST database.
@@ -28,5 +30,6 @@ The examples instrument the model to push metrics to the Prometheus Pushgateway 
 
 ## Usage examples
 [Training and Testing](https://github.com/hammingweight/gangplank/tree/main/examples/train)
+
 [Prediction/Inference](https://github.com/hammingweight/gangplank/tree/main/examples/predict)
 
