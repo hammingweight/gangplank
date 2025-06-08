@@ -1,11 +1,11 @@
 # Gangplank
-## Export Keras metrics to Prometheus
+## Export Keras Metrics to Prometheus
 [Prometheus](https://prometheus.io/) is a monitoring system that pulls metrics from applications and infrastructure.
 Gangplank is a Python package for exposing Keras model metrics to Prometheus. Metrics can be exported from training,
 evaluation and inference tasks. Training and testing metrics are exported using the Prometheus [Pushgateway](https://prometheus.io/docs/instrumenting/pushing/).
 Inference metrics are exposed by instrumenting a proxy of a Keras model.
 
-## What metrics are exported?
+## What Metrics are exported?
 ### Training Metrics
 During training, the following metrics are exported:
  * The number of completed training epochs
@@ -55,3 +55,6 @@ Similar comments apply to TensorFlow and PyTorch.
 ## Examples
 Examples of using Gangplank can be found [here](https://github.com/hammingweight/gangplank/tree/main/examples).
 
+## Acknowledgement
+The example code uses a model from ["Deep Learning with Python, Second Edition"](https://www.manning.com/books/deep-learning-with-python-second-edition).
+Gangplank was inspired by the same book's coverage of callbacks and TensorBoard.
