@@ -60,5 +60,5 @@ Similar comments apply to TensorFlow and PyTorch.
 Examples of using Gangplank can be found [here](https://github.com/hammingweight/gangplank/tree/main/examples).
 
 ## Acknowledgement
-The example code uses a model from ["Deep Learning with Python, Second Edition"](https://www.manning.com/books/deep-learning-with-python-second-edition).
+The example code uses a model from ["Deep Learning with Python, Second Edition"](https://www.manning.com/books/deep-learning-with-python-second-edition) by François Chollet.
 Gangplank was inspired by the same book's coverage of callbacks and TensorBoard.
