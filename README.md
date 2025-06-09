@@ -30,6 +30,7 @@ For testing (i.e. evaluation), the following metrics are exported:
 A deployed model can expose the following metrics:
  * The total number of model predictions
  * The time spent doing inference
+ * (Optionally) Drift metrics; e.g. a p-value
 
 ## Installing Gangplank
 Gangplank can be installed from PyPI

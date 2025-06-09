@@ -1,0 +1,5 @@
+groups:
+  - name: gangplank_rules
+    rules:
+      - alert: DriftDetected
+        expr: avg_over_time(gangplank_predict_drift_p_value[5m]) < 0.05

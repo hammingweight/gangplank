@@ -84,12 +84,12 @@ The script does not exit on completion so that the `predict.py` process continue
 
 ```
 $ curl -s http://localhost:8561/ | grep ^gangplank | grep -v created
-gangplank_predict_predict_total 101.0
-gangplank_predict_predict_time_seconds_total 0.25597500801086426
+gangplank_predict_total 101.0
+gangplank_predict_time_seconds_total 0.2814750671386719
 gangplank_predict_call_total 0.0
 gangplank_predict_call_time_seconds_total 0.0
 ```
 
-The metrics show that 101 predictions were performed and that the total spent on inference was 0.256 seconds. The last two lines are both 0.0; if instead
+The metrics show that 101 predictions were performed and that the total time spent on inference was 0.281 seconds. The last two lines are both 0.0; if instead
 of invoking `model.predict(x)`, we had invoked `model(x)`, then the metrics `gangplank_predict_call_total` and `gangplank_predict_call_time_seconds_total`
 would have been incremented.

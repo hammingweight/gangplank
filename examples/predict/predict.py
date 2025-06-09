@@ -29,7 +29,7 @@ to view metrics
 idx = 0
 while idx < 100:
     size = random.randint(1, 10)
-    x = test_images[idx: idx + size]
+    x = test_images[idx : idx + size]
     print(f"Doing inference on images {idx} - {idx + size - 1}")
     # Next line could be replaced with
     #   res = model(x)
