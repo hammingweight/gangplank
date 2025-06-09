@@ -1,24 +1,28 @@
 # Examples
 ## Running Prometheus and a Pushgateway (PGW) Locally
 The Gangplank examples require that you run a Prometheus server bound to `127.0.0.1:9090` that can scrape a gateway that is
-bound to `127.0.0.1:9091`. If you've installed Docker, you can run `./start_prometheus.sh` to start both the server and the gateway
+bound to `127.0.0.1:9091`. If you've installed Docker, you can run `./start_prometheus.sh` to start a server, a gateway and
+a Prometheus alertmanager
 
 ```
 $ ./start_prometheus.sh 
-c3b0e9147f1506a27021502be0d3d1cb2cdf730c59396bbc33f675221b7f4f6a
-210a2869ed768497a02729428cf0de3347a86b25a9b3dd3d52b01013d7a74c4f
-CONTAINER ID   IMAGE              COMMAND                  CREATED          STATUS          PORTS     NAMES
-210a2869ed76   prom/pushgateway   "/bin/pushgateway"       11 seconds ago   Up 10 seconds             pgw
-c3b0e9147f15   prom/prometheus    "/bin/prometheus --c…"   11 seconds ago   Up 10 seconds             prometheus
+f8cccd7201dab455523450546629064df0a9ac590da997718de86fb3c8059cdd
+1677ef1c098562999cc5160a52aab5f568256f7df6b05bb208129e7c7e25329f
+977eee5dc5149d9f2cc5a757df3ded2cce393282062c4597e2b8eb8bfdd25ce3
+CONTAINER ID   IMAGE               COMMAND                  CREATED          STATUS          PORTS     NAMES
+977eee5dc514   prom/alertmanager   "/bin/alertmanager -…"   10 seconds ago   Up 10 seconds             alertmanager
+1677ef1c0985   prom/pushgateway    "/bin/pushgateway"       11 seconds ago   Up 10 seconds             pgw
+f8cccd7201da   prom/prometheus     "/bin/prometheus --c…"   11 seconds ago   Up 11 seconds             prometheus
 ```
 
-Running `curl http://127.0.0.1:9090/metrics` and `curl http://127.0.0.1:9091/metrics` should return the metrics exposed by the
-server and the gateway.
+Running the alertmanager is not strictly necessary to demonstrate Gangplank.
 
-The training/testing examples push metrics to the PGW and the Prometheus server scrapes the metrics from the gateway.
+Running `curl http://127.0.0.1:9090/metrics`, `curl http://127.0.0.1:9091/metrics` and `curl http://127.0.0.1:9093/metrics` should return the metrics
+exposed by the server, the gateway and the alertmanager.
 
-The Prometheus server will also try to collect metrics from `127.0.0.1:8561`. The "predict" examples run a model for inference that starts an HTTP server that exposes
-the inference metrics (on port 8561). 
+Looking at the [prometheus.yml](./prometheus/prometheus.yml) configuration file shows that Prometheus is configured to collect metrics from itself, the pushgateway and
+the alertmanager. Opening the URL `http://localhost:9090/targets` in a browser should show that those targets are up. You'll also see that Prometheus is
+trying to scrape metrics from port 8561 but that the service ("mnist") is down but that's to be expected, for now.
 
 ## MNIST Dataset
 The examples use a convolutional neural network (CNN) to classify the handwritten digits in the MNIST database.
@@ -28,7 +32,7 @@ that accompany his book ["Deep Learning with Python"]([https://www.manning.com/b
 The examples instrument the model to push metrics to the Prometheus Pushgateway during training/testing and to publish metrics on port 8561 during inference.
 
 
-## Usage examples
+## Usage Examples
 [Training and Testing](https://github.com/hammingweight/gangplank/tree/main/examples/train)
 
 [Prediction/Inference](https://github.com/hammingweight/gangplank/tree/main/examples/predict)
