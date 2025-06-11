@@ -27,7 +27,7 @@ trying to scrape metrics from port 8561 but that the service ("mnist") is down b
 ## Gangplank Metrics
 Gangplank metrics are exposed with a `gangplank_` prefix:
  * `gangplank_train_` for training metrics
- * `gangplank_test_` for testing/inference metrics
+ * `gangplank_test_` for testing/evaluation metrics
  * `gangplank_predict_` for inference/prediction metrics.
 
 
