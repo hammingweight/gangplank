@@ -25,7 +25,7 @@ the alertmanager. Opening the URL `http://localhost:9090/targets` in a browser s
 trying to scrape metrics from port 8561 but that the service ("mnist") is down but that's to be expected, for now.
 
 ## Gangplank Metrics
-Gangplank metrics are exposed with a `gangplank_` prefix:
+Metrics stored in Prometheus have names that are (usually) in snake case and prefixed with a library name. Gangplank metrics are exposed with a `gangplank_` prefix:
  * `gangplank_train_` for training metrics
  * `gangplank_test_` for testing/evaluation metrics
  * `gangplank_predict_` for inference/prediction metrics.
