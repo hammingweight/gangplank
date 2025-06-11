@@ -24,6 +24,13 @@ Looking at the [prometheus.yml](./prometheus/prometheus.yml) configuration file 
 the alertmanager. Opening the URL `http://localhost:9090/targets` in a browser should show that those targets are up. You'll also see that Prometheus is
 trying to scrape metrics from port 8561 but that the service ("mnist") is down but that's to be expected, for now.
 
+## Gangplank Metrics
+Gangplank metrics are exposed with a `gangplank_` prefix:
+ * `gangplank_train_` for training metrics
+ * `gangplank_test_` for testing/inference metrics
+ * `gangplank_predict_` for inference/prediction metrics.
+
+
 ## MNIST Dataset
 The examples use a convolutional neural network (CNN) to classify the handwritten digits in the MNIST database.
 The CNN model is from one of François Chollet's [Jupyter notebooks](https://github.com/fchollet/deep-learning-with-python-notebooks/blob/master/chapter08_intro-to-dl-for-computer-vision.ipynb)
