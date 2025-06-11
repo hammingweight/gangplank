@@ -20,7 +20,7 @@ preds = model.predict(train_images[:20000], verbose=0)
 
 # Create an online drift detector (MMD)
 drift_detector = cd.MMDDriftOnline(
-    preds, ert=1000, window_size=200, backend="pytorch", n_bootstraps=10000
+    preds, ert=100, window_size=20, backend="pytorch", n_bootstraps=1000
 )
 
 
@@ -29,17 +29,19 @@ drift_detector = cd.MMDDriftOnline(
 # the MMD reports that drift was detected in the predictions. Note
 # that the input values (_X) are discarded since we're interested in
 # prediction drift not data drift.
-def get_drift_value(_X, Y):
-    c = 0.0
+def get_drift_metrics(_X, Y):
+    c = 0
     for y in Y:
         if drift_detector.predict(y)["data"]["is_drift"] == 1:
-            c += 1.0
-    return c
+            c += 1
+    return (c, None)
 
 
 # A proxy that instruments the Keras model. We use the closure to check for
 # prediction drift so that we can emit drift metrics.
-model = gangplank.PrometheusModel(model, port=8561, get_drift_value=get_drift_value)
+model = gangplank.PrometheusModel(
+    model, port=8561, get_drift_metrics_func=get_drift_metrics
+)
 
 input("Press Enter to continue...")
 
