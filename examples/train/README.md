@@ -1,5 +1,11 @@
 # Training/Testing a Model
-## The `TrainTestExporter` Class
+## What is a Prometheus Pushgateway?
+Prometheus pulls metrics from services or infrastructure at configured intervals. Batch jobs and other ephemeral processes are not well-suited to having
+metrics pulled. To allow ephemeral processes to store metrics in Prometheus, the pushgateway was created; processes push metrics to the gateway and Prometheus scrapes
+the gateway instead of the process. Machine learning training and testing jobs are ephemeral and, so, the idiomatic way for them to store metrics is for them to push metrics
+(like loss, accuracy or mean absolute error) to a gateway.
+
+## The Gangplank `TrainTestExporter` Class
 A `TrainTestExporter` object pushes training and testing metrics to a pushgateway. The class's constructor
 takes two mandatory arguments and four optional arguments:
  * `pgw_addr` is the address of the pushgateway (e.g. 127.0.0.1:9091).
