@@ -15,8 +15,6 @@ CONTAINER ID   IMAGE               COMMAND                  CREATED          STA
 f8cccd7201da   prom/prometheus     "/bin/prometheus --c…"   11 seconds ago   Up 11 seconds             prometheus
 ```
 
-Running the alertmanager is not strictly necessary to demonstrate Gangplank.
-
 Running `curl http://127.0.0.1:9090/metrics`, `curl http://127.0.0.1:9091/metrics` and `curl http://127.0.0.1:9093/metrics` should return the metrics
 exposed by the server, the gateway and the alertmanager.
 
@@ -31,12 +29,13 @@ Metrics stored in Prometheus have names that are (usually) in snake case and pre
  * `gangplank_predict_` for inference/prediction metrics.
 
 
-## MNIST Dataset
-The examples use a convolutional neural network (CNN) to classify the handwritten digits in the MNIST database.
+## MNIST Dataset and Keras Model
+The examples use a convolutional neural network (CNN) to classify handwritten digits from an MNIST dataset. The dataset consists of 70,000 black and white images, of 28 x 28 pixel resolution, where each image is of a single digit from 0 to 9.
+
 The CNN model is from one of François Chollet's [Jupyter notebooks](https://github.com/fchollet/deep-learning-with-python-notebooks/blob/master/chapter08_intro-to-dl-for-computer-vision.ipynb)
 that accompany his book ["Deep Learning with Python"]([https://www.manning.com/books/deep-learning-with-python](https://www.manning.com/books/deep-learning-with-python-second-edition)).
 
-The examples instrument the model to push metrics to the Prometheus Pushgateway during training/testing and to publish metrics on port 8561 during inference.
+The inputs to the CNN are batches of tensors of shape (28, 28, 1) and the output from the CNN is a one-hot encoding of the values 0 to 9; i.e. if an image can be categorized confidently as one of the decimal digits, then one of the CNN's ten outputs will have a value close to one while the other nine outputs will have a value close to zero.
 
 
 ## Usage Examples
