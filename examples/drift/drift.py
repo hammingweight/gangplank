@@ -20,7 +20,7 @@ preds = model.predict(train_images[:20000], verbose=0)
 
 # Create an online drift detector (MMD)
 drift_detector = cd.MMDDriftOnline(
-    preds, ert=100, window_size=20, backend="pytorch", n_bootstraps=1000
+    preds, ert=500, window_size=100, backend="pytorch", n_bootstraps=5000
 )
 
 
@@ -30,11 +30,16 @@ drift_detector = cd.MMDDriftOnline(
 # that the input values (_X) are discarded since we're interested in
 # prediction drift not data drift.
 def get_drift_metrics(_X, Y):
-    c = 0
+    count = 0
+    value = None
     for y in Y:
-        if drift_detector.predict(y)["data"]["is_drift"] == 1:
-            c += 1
-    return (c, None)
+        res = drift_detector.predict(y, return_test_stat=True)["data"]
+        if res["is_drift"] == 1:
+            count += 1
+        # Uncomment the next line if you want to publish MMD values
+        # as metrics.
+        # v = res["test_stat"]
+    return (count, value)
 
 
 # A proxy that instruments the Keras model. We use the closure to check for
