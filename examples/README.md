@@ -19,8 +19,12 @@ Running `curl http://127.0.0.1:9090/metrics`, `curl http://127.0.0.1:9091/metric
 exposed by the server, the gateway and the alertmanager.
 
 Looking at the [prometheus.yml](./prometheus/prometheus.yml) configuration file shows that Prometheus is configured to collect metrics from itself, the pushgateway and
-the alertmanager. Opening the URL `http://localhost:9090/targets` in a browser should show that those targets are up. You'll also see that Prometheus is
-trying to scrape metrics from port 8561 but that the service ("mnist") is down but that's to be expected, for now.
+the alertmanager. Opening [`http://localhost:9090/targets`](http://localhost:9090/targets) will show that those targets are up. You'll also see that Prometheus is
+trying to scrape metrics from a service running on port 8561 but that the service ("mnist") is down. The "mnist" service can be started by running the
+[prediction/inference](https://github.com/hammingweight/gangplank/tree/main/examples/predict) example code.
+
+![Target health](./targets.png)
+
 
 ## Gangplank Metrics
 Metrics stored in Prometheus have names that are (usually) in snake case and prefixed with a library name. Gangplank metrics are exposed with a `gangplank_` prefix:
