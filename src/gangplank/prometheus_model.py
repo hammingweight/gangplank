@@ -6,6 +6,8 @@ the time spent performing these operations. Optionally, it can start a Prometheu
 server for metrics exposition.
 
 Classes:
+    - Drift: A class that measures drift between observed data and the expected data
+        distribution.
     - PrometheusModel: Proxies a Keras model to monitor prediction and call metrics
         for storing in Prometheus.
 
@@ -14,8 +16,24 @@ Dependencies:
     - time
 """
 
+import typing
 import prometheus_client
 import time
+
+
+class Drift(typing.NamedTuple):
+    """
+    Represents the result of a drift detection test.
+
+    Attributes:
+        drift_detected (int, optional): A count of the number of drift incidents detected.
+        p_value (float, optional): The p-value resulting from the drift test.
+        test_statistic (float, optional): The test statistic value from the drift test.
+    """
+
+    drift_detected: int = None
+    p_value: float = None
+    test_statistic: float = None
 
 
 class PrometheusModel:
@@ -35,15 +53,12 @@ class PrometheusModel:
                 registry to use for metrics. Defaults to prometheus_client.REGISTRY.
             port (int, optional): If provided, starts a Prometheus HTTP server on the
                 specified port for metrics exposition.
-            get_drift_metrics_func(Callable[[X: ndarray, Y: ndarray], (float, float)],
+            get_drift_metrics_func(Callable[[X: ndarray, Y: ndarray], Drift],
                     optional):
                 A function that implements a drift detection algorithm. The function
                 takes two arguments: Iterables of input data and the model's
-                predictions. The function returns two values: (1) A count of the number
-                of drift incidents found in the input/output data and (2) a statistical
-                value for the drift (e.g. a p-value or mean maximum distance). Either
-                or both values can be None, in which case the associated Prometheus
-                metric is not updated.
+                predictions. The function must returns a Drift object but all Drift
+                attributes are optional.
         """
         self.model = model
         self.registry = registry
@@ -71,7 +86,8 @@ class PrometheusModel:
             prometheus_client.start_http_server(port, registry=registry)
         self.get_drift_metrics_func = get_drift_metrics_func
         self.drift_counter = None
-        self.drift_gauge = None
+        self.drift_p_gauge = None
+        self.drift_ts_gauge = None
 
     def __getattr__(self, name):
         return getattr(self.model, name)
@@ -81,22 +97,33 @@ class PrometheusModel:
             return
         if self.drift_counter is None:
             self.drift_counter = prometheus_client.Counter(
-                "gangplank_predict_drift_incidents_total",
+                "gangplank_predict_drift_detected_total",
                 "A count of drift detection incidents",
                 registry=self.registry,
             )
         self.drift_counter.inc(count)
 
-    def _update_drift_value(self, value):
+    def _update_drift_p_value(self, value):
         if value is None:
             return
-        if self.drift_gauge is None:
-            self.drift_gauge = prometheus_client.Gauge(
-                "gangplank_predict_drift_statistical_value",
-                "A statistical measure of drift",
+        if self.drift_p_gauge is None:
+            self.drift_p_gauge = prometheus_client.Gauge(
+                "gangplank_predict_drift_p_value",
+                "A p-value",
                 registry=self.registry,
             )
-        self.drift_gauge.set(value)
+        self.drift_p_gauge.set(value)
+
+    def _update_drift_test_statistic(self, value):
+        if value is None:
+            return
+        if self.drift_ts_gauge is None:
+            self.drift_ts_gauge = prometheus_client.Gauge(
+                "gangplank_predict_drift_test_statistic",
+                "A test statistic",
+                registry=self.registry,
+            )
+        self.drift_ts_gauge.set(value)
 
     def predict(self, x, batch_size=32, verbose="auto", steps=None, callbacks=[]):
         start_time = time.time()
@@ -106,9 +133,10 @@ class PrometheusModel:
             self.predict_counter.inc(len(y))
 
             if self.get_drift_metrics_func is not None:
-                (count, value) = self.get_drift_metrics_func(x, y)
-                self._update_drift_counter(count)
-                self._update_drift_value(value)
+                drift = self.get_drift_metrics_func(x, y)
+                self._update_drift_counter(drift.drift_detected)
+                self._update_drift_p_value(drift.p_value)
+                self._update_drift_test_statistic(drift.test_statistic)
             return y
         finally:
             self.predict_time.inc(time.time() - start_time)
