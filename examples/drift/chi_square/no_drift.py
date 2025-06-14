@@ -17,9 +17,7 @@ test_images = test_images.astype("float32") / 255
 
 # A proxy that instruments the Keras model. We use the closure to check for
 # prediction drift so that we can emit drift metrics.
-model = gangplank.PrometheusModel(
-    model, port=8561
-)
+model = gangplank.PrometheusModel(model, port=8561)
 
 input("Press Enter to continue...")
 

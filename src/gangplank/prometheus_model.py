@@ -26,9 +26,10 @@ class Drift(typing.NamedTuple):
     Represents the result of a drift detection test.
 
     Attributes:
-        drift_detected (int, optional): A count of the number of drift incidents detected.
-        p_value (float, optional): The p-value resulting from the drift test.
-        test_statistic (float, optional): The test statistic value from the drift test.
+        drift_detected (int, optional): A count of the number of drift incidents
+            detected.
+        p_value (float, optional): The p-value resulting from the test.
+        test_statistic (float, optional): The test statistic value from the test.
     """
 
     drift_detected: int = None
@@ -109,7 +110,7 @@ class PrometheusModel:
         if self.drift_p_gauge is None:
             self.drift_p_gauge = prometheus_client.Gauge(
                 "gangplank_predict_drift_p_value",
-                "A p-value",
+                "A p-value that quantifies the likelihood that drift has not occurred",
                 registry=self.registry,
             )
         self.drift_p_gauge.set(value)
@@ -120,7 +121,7 @@ class PrometheusModel:
         if self.drift_ts_gauge is None:
             self.drift_ts_gauge = prometheus_client.Gauge(
                 "gangplank_predict_drift_test_statistic",
-                "A test statistic",
+                "A measure of the distance between observed and expected data",
                 registry=self.registry,
             )
         self.drift_ts_gauge.set(value)

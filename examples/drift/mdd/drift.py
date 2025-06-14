@@ -6,7 +6,7 @@ import random
 import time
 
 # Load the model
-model = keras.models.load_model("../models/mnist_convnet.keras")
+model = keras.models.load_model("../../models/mnist_convnet.keras")
 
 # Use the MNIST test data for exercising model inference
 (train_images, _), (test_images, test_labels) = keras.datasets.mnist.load_data()
@@ -31,15 +31,14 @@ drift_detector = cd.MMDDriftOnline(
 # prediction drift not data drift.
 def get_drift_metrics(_X, Y):
     count = 0
-    value = None
+    ts = None
     for y in Y:
         res = drift_detector.predict(y, return_test_stat=True)["data"]
         if res["is_drift"] == 1:
             count += 1
-        # Uncomment the next line if you want to publish MMD values
-        # as metrics.
-        # v = res["test_stat"]
-    return (count, value)
+        if len(Y) == 1:
+            ts = res["test_stat"]
+    return gangplank.Drift(drift_detected=count, test_statistic=ts)
 
 
 # A proxy that instruments the Keras model. We use the closure to check for
