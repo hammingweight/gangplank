@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import alibi_detect.cd as cd
 import gangplank
 import keras
 import numpy as np
