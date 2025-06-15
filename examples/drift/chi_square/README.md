@@ -22,5 +22,12 @@ def get_drift_metrics(_X, Y):
     return gangplank.Drift(p_value=res.pvalue, test_statistic=res.statistic)
 ```
 
-Note that no metrics are returned if the number of predictions is less than 50 (since the chi-square test is of little value for small samples). If there sufficient samples, both the *p*-value
-and the test statistic are returned.
+Note that no metrics are returned if the number of predictions is less than 50 (since the chi-square test is of little value for small samples).
+
+If there are sufficient (50 or more) predictions, the function places the predictions in buckets to obtain the distribution of the values 0 to 9
+in the batch. A chi-square test can then be used to determine how closely the sampled distribution matches a uniform distribution. The function returns
+the associated *p*-value and test statistic.
+
+## Running the `drift.py` script
+The [drift.py](./drift.py) script exercises a Keras model by submitting batches of MNIST images to the model where the batches contain between 1
+and 200 images. For the first 15 minutes, the script selects images at uniformly at random. but after 15 minutes, no images of 0 (zero) are submitted to 
