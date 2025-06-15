@@ -17,6 +17,8 @@ argument and some optional arguments:
     not be supplied.
  * `registry` is an optional collector registry. If not supplied, the default registry is used which is usually
     the correct choice.
+ *  `get_drift_metrics_func` is a callback function that returns a measure of the drift observed in the prediction
+    data. See the [drift examples](../drift/README.md) for details.
 
 A minimal instantiation of a `PrometheusModel` would be
 

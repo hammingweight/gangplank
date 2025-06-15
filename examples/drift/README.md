@@ -31,3 +31,26 @@ Gangplank uses the following names to expose the metrics:
  * `gangplank_predict_drift_test_statistic`
 
 Note that `gangplank_predict_drift_detected_total` is a Prometheus `Counter`; if the counter has a value of 7 and a `Drift` object returns the value 2, the counter will be increased to 9.
+
+## The `get_drift_metrics_func` Callback
+Gangplank has no way to measure drift for an arbitrary model so, if you want to emit drift metrics, you need to provide a callback function that returns a
+`Drift` object. The function must expect two arguments:
+ * `X`: a batch of inputs to the model
+ * `Y`: a NumPy array of the associated predictions for the input data
+
+A minimal implementation of a callback function would be
+
+```
+def null_drift_detector(X, Y):
+    return Drift()
+```
+
+The example code is more instructive.
+
+## Examples
+### Measuring Drift with Alibi Detect
+The [MDD example](./mdd/) uses the MMD Online drift detector from the `alibi detect` package to measure drift.
+
+### Measuring Drift With SciPy Stats
+The [chi_square example](./chi_square/) uses the `scipy.stats` module's `chisquare` function to measure drift.
+This example also illustrates how to create alerts in Prometheus.

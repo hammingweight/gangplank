@@ -32,8 +32,6 @@ model = gangplank.PrometheusModel(
     model, port=8561, get_drift_metrics_func=get_drift_metrics
 )
 
-input("Press Enter to continue...")
-
 # Run some predictions without inducing drift
 print("Predictions without drift...")
 start_time = time.time()
