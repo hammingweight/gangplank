@@ -10,4 +10,17 @@ that the observed data is different from the assumed distribution. A small *p*-v
 in production has drifted from the data that was used in training.
 
 ## A `get_drift_metrics_func` for the chi-square test
+The following function is used by [drift.py](./drift.py) to return a drift metric
+```
+def get_drift_metrics(_X, Y):
+    if len(Y) < 50:
+        return gangplank.Drift()
+    buckets = [0] * 10
+    for y in Y:
+        buckets[y.argmax()] += 1
+    res = stats.chisquare(buckets)
+    return gangplank.Drift(p_value=res.pvalue, test_statistic=res.statistic)
+```
 
+Note that no metrics are returned if the number of predictions is less than 50 (since the chi-square test is of little value for small samples). If there sufficient samples, both the *p*-value
+and the test statistic are returned.
