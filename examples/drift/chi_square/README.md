@@ -58,3 +58,11 @@ After 15 minutes, the script artificially introduces drift by not submitting any
 below 0.05
 
 ![p-value, drift](./p_values_drift.png)
+
+## Prometheus Alerts
+Alerts can be created in Prometheus when some query returns an unexpected result. The Prometheus server has been configured with a [rule](../../prometheus/rules.yml)
+to generate an alert if the average *p*-value falls below 0.05. The "Alerts" dashboard shows that the "DriftDetected" alert is firing
+
+![Prometheus alert](./p_value_alert.png)
+
+Alerts are managed by an alertmanager which can be configured to send pages, post on Slack, send an email, etc. when an alert fires. Opening [http://localhost:9093](http://localhost:9093) will show the same alert in the alertmanager.
