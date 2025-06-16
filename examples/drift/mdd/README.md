@@ -31,6 +31,11 @@ heavier machinery than is actually needed. The [chi-square](../chi_square) examp
 The `MMDDriftOnline` detector can be used to return drift metrics.
 
 ```
+# A closure that uses the MMD to check whether predicted values are drifting
+# from the training data. The function returns the number of times that
+# the MMD reports that drift was detected in the predictions. Note
+# that the input values (_X) are discarded since we're interested in
+# prediction drift not data drift.
 def get_drift_metrics(_X, Y):
     count = 0
     ts = None
