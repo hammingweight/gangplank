@@ -42,18 +42,20 @@ Drift detector created. Press Enter to continue...
 Predictions without drift...
 ```
 
-For 15 minutes the script runs without inducing any drift, however if we plot the `gangplank_predict_drift_detected_total` we see that drift incidents are
+For 15 minutes the script runs without inducing any drift. However, if we plot the `gangplank_predict_drift_detected_total` we see that drift incidents are
 being reported
 
 ![drift_detected counts](./gp_drift_total.png)
 
-That's not surprising since a statistical test can report false positives. Better than simply reporting the total number of drift incidents, is to look at the ratio of drift incidents to the number of predictions
+We should expect that the MDD test will erroneously report some incidents of drift since a statistical test can report false positives. To get a better assessment of whether drift is
+actually occurring, we should look at the ratio of drift incidents to the number of predictions instead of the absolute number of drift incidents alone. A suitable PromQL (Prometheus Query Language) 
+query is `rate(gangplank_predict_drift_detected_total[1m])/rate(gangplank_predict_total[1m])`
 
 ![drift detected ratio](gp_drift_rate.png)
 
-We can see that about 7% of predictions are reported as "drift detected" incidents.
+The graph shows that about 7% of predictions are reported as "drift detected" incidents.
 
-After 15 minutes, the script performs inference on images but discards any images of the digit 0. Unsurprisingly, the ratio of "drift detected" incidents climbs from 7% to 100%
+After 15 minutes, the script discards any images of the digit 0 and performs inference only on images of the digits 1 to 9. Under the assumption that 10% of images should be of a '0', the probability of not encountering any images of a '0' in a window of 200 predictions is very small. Unsurprisingly, the ratio of "drift detected" incidents climbs from 7% to 100% as seen below.
 
 ![drift for real](./gp_drift_detected.png)
 
@@ -62,4 +64,4 @@ expected distribution.
 
 ![test statistic](./gp_drift_test_statistic.png)
 
-The plot of the test statistic shows that its value increases from close to 0 to about 0.007 when drift is induced.
+The above plot shows that the value of the test statistic increases from close to 0 when there is no drift to about 0.007 when drift is induced.
