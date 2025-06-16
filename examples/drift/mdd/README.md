@@ -28,8 +28,33 @@ heavier machinery than is actually needed. The [chi-square](../chi_square) examp
 
 
 ## A `get_drift_metrics_func` for the MMD Test
+The `MMDDriftOnline` detector can be used to return drift metrics.
+
+```
+def get_drift_metrics(_X, Y):
+    count = 0
+    ts = None
+    for y in Y:
+        res = drift_detector.predict(y, return_test_stat=True)["data"]
+        if res["is_drift"] == 1:
+            count += 1
+        if len(Y) == 1:
+            ts = res["test_stat"]
+    return gangplank.Drift(drift_detected=count, test_statistic=ts)
+```
+
+The `predict` method of a `MMDDriftOnline` director returns a dictionary where the `is_drift` key indicates whether drift has been detected.
+
+The `get_drift_metrics` can be passed to the constructor of a `PrometheusModel` to export drift metrics
+
+```
+model = gangplank.PrometheusModel(
+    model, port=8561, get_drift_metrics_func=get_drift_metrics
+)
+```
 
 ## Running the `drift.py` Script
+The [drift.py](./drift.py) script demonstrates how the drift detector can identify drift. Drift is artificially introduced in the script. To run the script:
 
 ```
 $ KERAS_BACKEND=torch python drift.py 
@@ -42,13 +67,15 @@ Drift detector created. Press Enter to continue...
 Predictions without drift...
 ```
 
+**Constructing an `MMDDriftOnline` object can be very time-consuming. On a Ryzen 7 3700 CPU, instantiating the object for this example took more than 90 minutes (see above). Also, inference can be significantly slowed down if drift detection is done as part of the `predict` call.**
+
 For 15 minutes the script runs without inducing any drift. However, if we plot the `gangplank_predict_drift_detected_total` we see that drift incidents are
 being reported
 
 ![drift_detected counts](./gp_drift_total.png)
 
 We should expect that the MDD test will erroneously report some incidents of drift since a statistical test can report false positives. To get a better assessment of whether drift is
-actually occurring, we should look at the ratio of drift incidents to the number of predictions instead of the absolute number of drift incidents alone. A suitable PromQL (Prometheus Query Language) 
+actually occurring, we should look at the ratio of drift incidents to the number of predictions instead of the absolute number of drift incidents. A suitable PromQL (Prometheus Query Language) 
 query is `rate(gangplank_predict_drift_detected_total[1m])/rate(gangplank_predict_total[1m])`
 
 ![drift detected ratio](gp_drift_rate.png)
