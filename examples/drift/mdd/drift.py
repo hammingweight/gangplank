@@ -58,8 +58,7 @@ while time.time() - start_time < 900:
 
 # Artificially induce drift by discarding all images of zero.
 print("Predictions with drift...")
-start_time = time.time()
-while time.time() - start_time < 900:
+while True:
     idx = random.randint(0, 9999)
     label = test_labels[idx]
     if label == 0:
