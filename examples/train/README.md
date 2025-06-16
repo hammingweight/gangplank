@@ -47,7 +47,7 @@ gangplank_train_val_loss{instance="",job="mnist"} 0.05415859818458557
 ```
 The metrics include the training and validation loss and accuracy, the number of completed epochs, the running time and the number of weights (parameters) in the model.
 
-The Prometheus server dashboard can be used to query or view the metrics. For example, the image shows that validation loss reached a minimum at 09:38 (epoch 13) and the training
+The Prometheus server dashboard can be used to query or view the metrics. For example, the image shows that validation loss (`gangplank_train_val_loss`) reached a minimum at 09:38 (epoch 13) and the training
 started to overfit the data after that.
 
 ![Training validation loss](./train_val_loss.png)
