@@ -30,4 +30,31 @@ the associated *p*-value and test statistic.
 
 ## Running the `drift.py` script
 The [drift.py](./drift.py) script exercises a Keras model by submitting batches of MNIST images to the model where the batches contain between 1
-and 200 images. For the first 15 minutes, the script selects images at uniformly at random. but after 15 minutes, no images of 0 (zero) are submitted to 
+and 200 images. For the first 15 minutes, the script selects images at uniformly at random.
+
+```
+$ KERAS_BACKEND=torch python drift.py 
+Predictions without drift...
+```
+
+The Prometheus client running in the `drift.py` script is returning *p*-values
+
+```
+$ curl -s http://localhost:8561/metrics | grep gangplank_predict_drift_p_value
+# HELP gangplank_predict_drift_p_value A p-value that quantifies the likelihood that drift has not occurred
+# TYPE gangplank_predict_drift_p_value gauge
+gangplank_predict_drift_p_value 0.7349861974693668
+```
+
+Viewing the *p*-values in the Prometheus dashboard shows that the values are gyrating between 0 and 1.
+
+![p-value, no drift, unsmoothed](./p_values_no_drift_unsmoothed.png)
+
+Using Prometheus's `avg_over_time` to get the average value over 5 minute windows leads to a smoother graph showing an average value of about 0.5.
+
+![p-value, no drift, smoothed](./p_values_no_drift_smoothed.png)
+
+After 15 minutes, the script artificially introduces drift by not submitting any images of the digit 0 and the average *p*-value falls from 0.5 to a little
+below 0.05
+
+![p-value, drift](./p_values_drift.png)
