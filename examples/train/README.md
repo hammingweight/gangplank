@@ -18,7 +18,7 @@ takes two mandatory arguments and four optional arguments:
 
 An example instantiation of a `TrainTestExporter` would be
 
-```
+```python
 callback = gangplank.TrainTestExporter("127.0.0.1:9091", "mnist", histogram_buckets=gangplank.HISTOGRAM_WEIGHT_BUCKETS_0_3)
 ```
 
@@ -26,7 +26,7 @@ callback = gangplank.TrainTestExporter("127.0.0.1:9091", "mnist", histogram_buck
 The [code](https://github.com/hammingweight/gangplank/blob/main/examples/train/train.py) to train the model instantiates a 
 `gangplank.TrainTestExporter`
 
-```
+```python
 gangplank.TrainTestExporter("127.0.0.1:9091", "mnist"),
 ```
 
@@ -57,7 +57,7 @@ started to overfit the data after that.
 The training code saves the best model to a file, "mnist_convnet.keras". The testing [code](https://github.com/hammingweight/gangplank/blob/main/examples/mnist/test.py)
 loads the model and evaluates the model using the MNIST test data (10,000 samples). The code instantiates a `TrainTestExporter`
 
-```
+```python
 callback = gangplank.TrainTestExporter(
     "http://localhost:9091",
     "mnist",
