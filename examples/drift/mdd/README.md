@@ -1,14 +1,31 @@
 # Drift Detection using Alibi Detect
 ## Alibi Detect
-Alibi detect is a Python library that provides drift detection tests. The tests can be classified as online (realtime)
+Alibi detect is a Python library that provides drift detection tests. Alibi's tests can be classified as online (realtime)
 or batch (offline). In this example, we'll use the online MDD (maximum mean discrepancy) test, `MMDDriftOnline`. 
-The example needs both the alibi_detect and pytorch libraries.
+The `alibi-detect` and `pytorch` libraries must be installed to run this drift detection code
 
 ```
 $ pip install alibi-detect[torch]
 ```
 
-## Configuring `MMDDriftOnline`
+## Configuring an `MMDDriftOnline` Drift Detector
+To compare observed and expected distributions, it is necessary to determine the expected distribution. In this example, we want
+to check for *prediction* drift, so we need to determine the distribution of the predictions for the training data. That's achieved
+by the following lines in the [drift.py](./drift.py) script.
+
+```
+preds = model.predict(train_images[:20000], verbose=0)
+drift_detector = cd.MMDDriftOnline(
+    preds, ert=500, window_size=200, backend="pytorch", n_bootstraps=5000
+)
+```
+
+where `preds` are the predictions for 20,000 training images from the MNIST dataset. The `window_size=200` argument is used to
+specify that a rolling window of 200 predicted values must be used to detect whether drift has occurred.
+
+**Note:** This example is artificial since we know that the expected distribution should be a uniform distribution of the values 0 to 9. `alibi-detect` provides
+heavier machinery than is actually needed. The [chi-square](../chi_square) example uses more elementary statistics than is used here.
+
 
 ## A `get_drift_metrics_func` for the MMD Test
 
