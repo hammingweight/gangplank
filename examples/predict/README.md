@@ -22,13 +22,13 @@ argument and some optional arguments:
 
 A minimal instantiation of a `PrometheusModel` would be
 
-```
+```python
 instrumented_model = gangplank.PrometheusModel(keras_model)
 ```
 
 If you also want to start an HTTP server that publishes metrics on port 9123, you would need code like
 
-```
+```python
 instrumented_model = gangplank.PrometheusModel(keras_model, port=9123)
 ```
 

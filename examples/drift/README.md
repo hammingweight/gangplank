@@ -16,7 +16,7 @@ metric to Prometheus.
 ## The `Drift` Class
 A `Drift` object must be created to report drift
 
-```
+```python
 class Drift(typing.NamedTuple):
     drift_detected: int = None
     p_value: float = None
@@ -41,7 +41,7 @@ Gangplank has no way to measure drift for an arbitrary model so, if you want to 
 
 A minimal implementation of a callback function would be
 
-```
+```python
 def null_drift_detector(X, Y):
     return Drift()
 ```

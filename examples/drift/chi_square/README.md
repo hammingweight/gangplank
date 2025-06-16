@@ -11,7 +11,7 @@ in production has drifted from the data that was used in training.
 
 ## A `get_drift_metrics_func` for the chi-square test
 The following function is used by [drift.py](./drift.py) to return a drift metric
-```
+```python
 def get_drift_metrics(_X, Y):
     if len(Y) < 50:
         return gangplank.Drift()

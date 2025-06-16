@@ -13,7 +13,7 @@ To compare observed and expected distributions, it is necessary to determine the
 to check for *prediction* drift, so we need to determine the distribution of the predictions for the training data. That's achieved
 by the following lines in the [drift.py](./drift.py) script.
 
-```
+```python
 preds = model.predict(train_images[:20000], verbose=0)
 drift_detector = cd.MMDDriftOnline(
     preds, ert=500, window_size=200, backend="pytorch", n_bootstraps=5000
@@ -30,7 +30,7 @@ heavier machinery than is actually needed. The [chi-square](../chi_square) examp
 ## A `get_drift_metrics_func` for the MMD Test
 The `MMDDriftOnline` detector can be used to return drift metrics.
 
-```
+```python
 # A closure that uses the MMD to check whether predicted values are drifting
 # from the training data. The function returns the number of times that
 # the MMD reports that drift was detected in the predictions. Note
@@ -52,7 +52,7 @@ The `predict` method of a `MMDDriftOnline` director returns a dictionary where t
 
 The `get_drift_metrics` can be passed to the constructor of a `PrometheusModel` to export drift metrics
 
-```
+```python
 model = gangplank.PrometheusModel(
     model, port=8561, get_drift_metrics_func=get_drift_metrics
 )
