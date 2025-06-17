@@ -1,4 +1,7 @@
 # Testing a Model
+The example in this directory assumes that you have run [`train.py`](../train/train.py) to create
+a Keras model.
+
 ## The `test.py` Script
 The `TrainTestExporter` class can be used for exporting both training and testing metrics. In the [test.py](./test.py) script,
 a `TrainTestExporter` object is instantiated as
