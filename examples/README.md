@@ -1,8 +1,8 @@
 # Examples
 ## Running Prometheus and a Pushgateway (PGW) Locally
-The Gangplank examples require that you run a Prometheus server bound to `127.0.0.1:9090` that can scrape a gateway that is
-bound to `127.0.0.1:9091`. If you've installed [Docker](https://www.docker.com/), you can run `./start_prometheus.sh` to start a server, a gateway and
-a Prometheus alertmanager
+The Gangplank examples require that you run a Prometheus server bound to `127.0.0.1:9090` and a Prometheus pushgateway that is listening
+on `127.0.0.1:9091`. If you've installed [Docker](https://www.docker.com/), you can run `./start_prometheus.sh` to start a server, a gateway and,
+additionally, a Prometheus alertmanager
 
 ```
 $ ./start_prometheus.sh 
@@ -43,6 +43,16 @@ The inputs to the CNN are batches of tensors of shape (28, 28, 1) and the output
 
 
 ## Usage Examples
-[Training and Testing](https://github.com/hammingweight/gangplank/tree/main/examples/train)
+[Training:](./train/) This sample code trains a model to identify handrwitten digits from the
+MNIST dataset and exposes training metrics to Prometheus. Publishing training metrics uses Gangplank's [`TrainTestExporter](../src/gangplank/train_test_exporter.py) class that extends the `keras.callbacks.Callback` class.
+This script must be run before running the other examples since it saves a Keras model to disk that is needed for the remaining examples. 
 
-[Prediction/Inference](https://github.com/hammingweight/gangplank/tree/main/examples/predict)
+[Testing:](./test/) This example evaluates the model created by the training script and exports the metrics to Prometheus. The sample code demonstrates
+some additional options when instantiating a `TrainTestExporter` object.
+
+Both the training and testing examples use the Prometheus pushgateway.
+
+[Prediction/Inference:](./predict/) This example uses the model created by the training script to perform inference. The example exposes the number of inference requests and the associated running time to Prometheus. Instrumenting inference does not need the pushgateway; instead Gangplank instruments a [`PrometheusModel`](../src/gangplank/prometheus_model.py) object that proxies a Keras model.
+
+[Drift detection:](./drift/) There are two examples of detecting drift and displaying drift metrics in Prometheus. The first example uses the alibi-detect library's `MMDDriftOnline` class to detect drift. The second example uses SciPy's stats module to emit a chi-square *p*-value metric. The second example also shows off
+Prometheus's alertmanager to raise an alert if drift is detected.  
