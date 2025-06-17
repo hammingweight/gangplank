@@ -1,10 +1,10 @@
 # Training a Model
 ## Gangplank and the Prometheus Pushgateway
-Gangplank needs a Prometheus Pushgateway to expose training (and testing) metrics. Monitoring systems can be push- or pull-based.
-Prometheus pulls metrics from services or infrastructure at configured intervals. Batch jobs and other ephemeral processes are not well-suited to having
-metrics pulled. To allow ephemeral processes to store metrics in Prometheus, the pushgateway was created; processes push metrics to the gateway and Prometheus scrapes
-the gateway instead of the process. Machine learning training and testing jobs are ephemeral and, so, the idiomatic way to store training metrics in
-Prometheus is for Gangplank to push the metrics (like loss, accuracy or mean absolute error) to a gateway.
+Monitoring systems can be push- or pull-based. Prometheus is pull-based: it pulls metrics from services or infrastructure at configured intervals. A disadvantage of pull-based monitoring is that batch jobs and other ephemeral processes are not well-suited to having
+metrics pulled. The Prometheus pushgateway was created to work around this limitation. Instead of polling ephemeral processes, those processes push metrics to the pushgateway and Prometheus scrapes the metrics from the gateway.
+
+Machine learning training and testing jobs are ephemeral and, so, the idiomatic way to store training metrics in
+Prometheus is for Gangplank to push the metrics (like loss, accuracy or mean absolute error) to the gateway.
 
 ## The Gangplank `TrainTestExporter` Class
 A `TrainTestExporter` object pushes training and testing metrics to a pushgateway. The class's constructor
@@ -24,8 +24,7 @@ callback = gangplank.TrainTestExporter("127.0.0.1:9091", "mnist", histogram_buck
 ```
 
 ## The Training Script
-The [code](./train.py) to train the model instantiates a 
-`gangplank.TrainTestExporter`
+The [training script](./train.py) instantiates a `gangplank.TrainTestExporter` callback
 
 ```python
 gangplank.TrainTestExporter("127.0.0.1:9091", "mnist"),
@@ -33,8 +32,7 @@ gangplank.TrainTestExporter("127.0.0.1:9091", "mnist"),
 
 that specifies the address of the Prometheus PGW and that the job name is "mnist".
 
-The training script creates two callbacks: The `TrainTestExporter` and a `ModelCheckpoint`
-callback to save the model whenever validation loss improves
+The training script also creates a `ModelCheckpoint` callback to save the model whenever validation loss improves
 
 ```python
 callbacks = [
@@ -47,10 +45,10 @@ callbacks = [
 ]
 ```
 
-The callbacks are passed as arguments to the model's `fit` method
+The `TrainTestExporter` and `ModelCheckpoint` callbacks are passed as arguments to the model's `fit` method
 
 ```python
-odel.fit(
+model.fit(
     train_images,
     train_labels,
     epochs=30,
@@ -61,7 +59,7 @@ odel.fit(
 ```
 
 ## Running the Training Script
-You can run the training script by running `python train.py`. Once the first training epoch has finished, you should be able to retrieve some
+You can run the training script by running `python train.py`. Once the first training epoch has finished, you can retrieve
 metrics with the prefix `gangplank_train` from the PGW
 
 ```
@@ -76,15 +74,15 @@ gangplank_train_val_loss{instance="",job="mnist"} 0.05415859818458557
 ```
 The metrics include the training and validation loss and accuracy, the number of completed epochs, the running time and the number of weights (parameters) in the model.
 
-The Prometheus server dashboard can be used to query or view the metrics. For example, the image shows that validation loss (`gangplank_train_val_loss`) reached a minimum at 09:38 (epoch 13) and the training
-started to overfit the data after that.
+The Prometheus server dashboard at [http://localhost:9090](http://localhost:9090/query) can be used to query or view the metrics. For example, the image shows that validation loss (`gangplank_train_val_loss`) reached a minimum at 09:38 (epoch 13) and the training
+then started to overfit the data.
 
 ![Training validation loss](./train_val_loss.png)
 
 ## Custom Metrics
-Keras has a number of [metrics](https://keras.io/api/metrics/) that can be exported to Prometheus but you can also export any other numeric value
+Keras has a number of [metrics](https://keras.io/api/metrics/) that can be exported to Prometheus but you can also export any other measurements
 that you want. The [train_with_custom_metric](./train_with_custom_metric.py) script pushes the optimizer's learning rate to Prometheus at the end
-of each training metric.
+of each training epoch.
 
 If you run `python train_with_custom_metric.py` and wait for the first training epoch to complete,
 you can then get the learning rate metric from the pushgateway
@@ -96,4 +94,4 @@ $ curl -s http://localhost:9091/metrics | grep gangplank_train_learning_rate
 gangplank_train_learning_rate{instance="",job="mnist"} 0.004999999888241291
 ```
 
-The metric can also be seen in the [Prometheus QueryExplorer](http://localhost:9090/query?g0.expr=gangplank_train_learning_rate&g0.show_tree=0&g0.tab=table&g0.range_input=1h&g0.res_type=auto&g0.res_density=medium&g0.display_mode=lines&g0.show_exemplars=0)
+The learning rate metric can also be seen in the [Prometheus QueryExplorer](http://localhost:9090/query?g0.expr=gangplank_train_learning_rate&g0.show_tree=0&g0.tab=table&g0.range_input=1h&g0.res_type=auto&g0.res_density=medium&g0.display_mode=lines&g0.show_exemplars=0)
