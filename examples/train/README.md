@@ -1,9 +1,10 @@
-# Training/Testing a Model
-## What is a Prometheus Pushgateway?
+# Training a Model
+## Gangplank and the Prometheus Pushgateway
+Gangplank needs a Prometheus Pushgateway to expose training (and testing) metrics. Monitoring systems can be push- or pull-based.
 Prometheus pulls metrics from services or infrastructure at configured intervals. Batch jobs and other ephemeral processes are not well-suited to having
 metrics pulled. To allow ephemeral processes to store metrics in Prometheus, the pushgateway was created; processes push metrics to the gateway and Prometheus scrapes
-the gateway instead of the process. Machine learning training and testing jobs are ephemeral and, so, the idiomatic way for them to store metrics is for them to push metrics
-(like loss, accuracy or mean absolute error) to a gateway.
+the gateway instead of the process. Machine learning training and testing jobs are ephemeral and, so, the idiomatic way to store training metrics in
+Prometheus is for Gangplank to push the metrics (like loss, accuracy or mean absolute error) to a gateway.
 
 ## The Gangplank `TrainTestExporter` Class
 A `TrainTestExporter` object pushes training and testing metrics to a pushgateway. The class's constructor
@@ -22,8 +23,8 @@ An example instantiation of a `TrainTestExporter` would be
 callback = gangplank.TrainTestExporter("127.0.0.1:9091", "mnist", histogram_buckets=gangplank.HISTOGRAM_WEIGHT_BUCKETS_0_3)
 ```
 
-## Training the Model
-The [code](https://github.com/hammingweight/gangplank/blob/main/examples/train/train.py) to train the model instantiates a 
+## The Training Script
+The [code](./train.py) to train the model instantiates a 
 `gangplank.TrainTestExporter`
 
 ```python
@@ -32,7 +33,35 @@ gangplank.TrainTestExporter("127.0.0.1:9091", "mnist"),
 
 that specifies the address of the Prometheus PGW and that the job name is "mnist".
 
-You can run the training script by running `python3 train.py`. Once the first training epoch has finished, you should be able to retrieve some
+The training script creates two callbacks: The `TrainTestExporter` and a `ModelCheckpoint`
+callback to save the model whenever validation loss improves
+
+```python
+callbacks = [
+    keras.callbacks.ModelCheckpoint(
+        filepath="../models/mnist_convnet.keras",
+        save_best_only=True,
+        monitor="val_loss",
+    ),
+    gangplank.TrainTestExporter("127.0.0.1:9091", "mnist"),
+]
+```
+
+The callbacks are passed as arguments to the model's `fit` method
+
+```python
+odel.fit(
+    train_images,
+    train_labels,
+    epochs=30,
+    validation_split=validation_split,
+    batch_size=64,
+    callbacks=callbacks,
+)
+```
+
+## Running the Training Script
+You can run the training script by running `python train.py`. Once the first training epoch has finished, you should be able to retrieve some
 metrics with the prefix `gangplank_train` from the PGW
 
 ```
@@ -52,54 +81,19 @@ started to overfit the data after that.
 
 ![Training validation loss](./train_val_loss.png)
 
+## Custom Metrics
+Keras has a number of [metrics](https://keras.io/api/metrics/) that can be exported to Prometheus but you can also export any other numeric value
+that you want. The [train_with_custom_metric](./train_with_custom_metric.py) script pushes the optimizer's learning rate to Prometheus at the end
+of each training metric.
 
-## Testing (Evaluating) the Model
-The training code saves the best model to a file, "mnist_convnet.keras". The testing [code](https://github.com/hammingweight/gangplank/blob/main/examples/mnist/test.py)
-loads the model and evaluates the model using the MNIST test data (10,000 samples). The code instantiates a `TrainTestExporter`
-
-```python
-callback = gangplank.TrainTestExporter(
-    "http://localhost:9091",
-    "mnist",
-    histogram_buckets=gangplank.HISTOGRAM_WEIGHT_BUCKETS_0_3,
-    ignore_exceptions=False,
-)
-```
-to
- * Emit a histogram of model weights in buckets in the interval [-0.3, 0.3]
- * Abort the test run if an exception occurs (e.g. if the PGW is down)
-
-To test the model, run `python test.py`.
-
-The test/evaluation metrics are emitted with a `gangplank_test` prefix
+If you run `python train_with_custom_metric.py` and wait for the first training epoch to complete,
+you can then get the learning rate metric from the pushgateway
 
 ```
-$ curl -s http://localhost:9091/metrics | grep -v '#' | grep gangplank_test
-gangplank_test_accuracy{instance="",job="mnist"} 0.9896000027656555
-gangplank_test_elapsed_time_seconds{instance="",job="mnist"} 2.2292304039001465
-gangplank_test_loss{instance="",job="mnist"} 0.041046421974897385
-gangplank_test_model_parameters_count{instance="",job="mnist"} 104202
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.3"} 1122
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.25"} 2456
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.2"} 5280
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.15"} 10759
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.1"} 20734
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.05"} 36836
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="0"} 58190
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.05"} 77984
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.1"} 91480
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.15"} 99129
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.2"} 102498
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.25"} 103643
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.3"} 104013
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="+Inf"} 104202
-gangplank_test_model_weights_sum{instance="",job="mnist"} 0
-gangplank_test_model_weights_count{instance="",job="mnist"} 104202
-gangplank_test_model_weights_created{instance="",job="mnist"} 1.7488593562987614e+09
+$ curl -s http://localhost:9091/metrics | grep gangplank_train_learning_rate
+# HELP gangplank_train_learning_rate learning_rate
+# TYPE gangplank_train_learning_rate gauge
+gangplank_train_learning_rate{instance="",job="mnist"} 0.004999999888241291
 ```
 
-Some information that can be gleaned from the metrics is that:
- * The model accuracy is 98.96%
- * It took 2.23 seconds to evaluate the 10,000 test samples
- * There are 104,202 model weights
- * 1122 model weights have a value less than -0.3
+The metric can also be seen in the [Prometheus QueryExplorer](http://localhost:9090/query?g0.expr=gangplank_train_learning_rate&g0.show_tree=0&g0.tab=table&g0.range_input=1h&g0.res_type=auto&g0.res_density=medium&g0.display_mode=lines&g0.show_exemplars=0)
