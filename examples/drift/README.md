@@ -10,7 +10,7 @@ There are also several ways to expose drift as a metric:
  * A test statistic (a measure of the "distance" between an observation and the expected distribution)
  * A count of the number of times that input or output data drifted from the expected distribution
 
-Gangplank is agnostic about the form of drift and the metric and the metric used to quantify the drift; it simply provides a means of exposing the
+Gangplank is agnostic about the form of drift and the metric used to quantify the drift; it simply provides a means of exposing the
 metric to Prometheus.
 
 ## The `Drift` Class
