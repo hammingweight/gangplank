@@ -1,61 +1,7 @@
-# Training/Testing a Model
-## What is a Prometheus Pushgateway?
-Prometheus pulls metrics from services or infrastructure at configured intervals. Batch jobs and other ephemeral processes are not well-suited to having
-metrics pulled. To allow ephemeral processes to store metrics in Prometheus, the pushgateway was created; processes push metrics to the gateway and Prometheus scrapes
-the gateway instead of the process. Machine learning training and testing jobs are ephemeral and, so, the idiomatic way for them to store metrics is for them to push metrics
-(like loss, accuracy or mean absolute error) to a gateway.
-
-## The Gangplank `TrainTestExporter` Class
-A `TrainTestExporter` object pushes training and testing metrics to a pushgateway. The class's constructor
-takes two mandatory arguments and four optional arguments:
- * `pgw_addr` is the address of the pushgateway (e.g. 127.0.0.1:9091).
- * `job` is a name to attach to the metrics.
- * `metrics` is an optional argument to specify which metrics to emit. If omitted, all available metrics are exported.
- * `histogram_buckets` is an optional list of `float`s to specify the buckets that the model's weights will be placed into (e.g. `[-0.3, -0.1, 0.1, 0.3]`). As a convenience, the constants
-   `HISTOGRAM_WEIGHT_BUCKETS_1_0` and `HISTOGRAM_WEIGHT_BUCKETS_0_3` provide sensible choices for model weights in the intervals [-1.0, +1.0] and [-0.3, +0.3].
- * `handler` is an optional callback function that must be supplied if the pushgateway requires authentication; see [https://prometheus.github.io/client_python/exporting/pushgateway/](https://prometheus.github.io/client_python/exporting/pushgateway/)
- *  if the optional `ignore_exceptions` argument is `False`, the training or testing run will be aborted if the metrics can't be processed or pushed (e.g. the gateway is down).
-
-An example instantiation of a `TrainTestExporter` would be
-
-```python
-callback = gangplank.TrainTestExporter("127.0.0.1:9091", "mnist", histogram_buckets=gangplank.HISTOGRAM_WEIGHT_BUCKETS_0_3)
-```
-
-## Training the Model
-The [code](https://github.com/hammingweight/gangplank/blob/main/examples/train/train.py) to train the model instantiates a 
-`gangplank.TrainTestExporter`
-
-```python
-gangplank.TrainTestExporter("127.0.0.1:9091", "mnist"),
-```
-
-that specifies the address of the Prometheus PGW and that the job name is "mnist".
-
-You can run the training script by running `python3 train.py`. Once the first training epoch has finished, you should be able to retrieve some
-metrics with the prefix `gangplank_train` from the PGW
-
-```
-$ curl -s http://localhost:9091/metrics | grep gangplank_train | grep -v '#' 
-gangplank_train_accuracy{instance="",job="mnist"} 0.9448703527450562
-gangplank_train_elapsed_time_seconds{instance="",job="mnist"} 53.397014141082764
-gangplank_train_epochs_count{instance="",job="mnist"} 1
-gangplank_train_loss{instance="",job="mnist"} 0.18397289514541626
-gangplank_train_model_parameters_count{instance="",job="mnist"} 104202
-gangplank_train_val_accuracy{instance="",job="mnist"} 0.9835000038146973
-gangplank_train_val_loss{instance="",job="mnist"} 0.05415859818458557
-```
-The metrics include the training and validation loss and accuracy, the number of completed epochs, the running time and the number of weights (parameters) in the model.
-
-The Prometheus server dashboard can be used to query or view the metrics. For example, the image shows that validation loss (`gangplank_train_val_loss`) reached a minimum at 09:38 (epoch 13) and the training
-started to overfit the data after that.
-
-![Training validation loss](./train_val_loss.png)
-
-
-## Testing (Evaluating) the Model
-The training code saves the best model to a file, "mnist_convnet.keras". The testing [code](https://github.com/hammingweight/gangplank/blob/main/examples/mnist/test.py)
-loads the model and evaluates the model using the MNIST test data (10,000 samples). The code instantiates a `TrainTestExporter`
+# Testing a Model
+## The `test.py` Script
+The `TrainTestExporter` class can be used for exporting both training and testing metrics. In the [test.py](./test.py) script,
+a `TrainTestExporter` object is instantiated as
 
 ```python
 callback = gangplank.TrainTestExporter(
@@ -65,12 +11,20 @@ callback = gangplank.TrainTestExporter(
     ignore_exceptions=False,
 )
 ```
-to
- * Emit a histogram of model weights in buckets in the interval [-0.3, 0.3]
- * Abort the test run if an exception occurs (e.g. if the PGW is down)
 
-To test the model, run `python test.py`.
+This instantiation has two more arguments than were passed to the constructor of the [training script](../train/train.py).
+The `histogram_buckets` argument specifies the buckets that the model's weights will be placed into. The buckets are in the interval [-0.3, +0.3].
+The `ignore_exceptions` = False argument will cause model testing to fail if the Gangplank callback throws an exception. For example, if the pushgateway is inaccessible, the `TrainTestExporter` will throw an exception rather than just printing the problem to `stderr`.
 
+The training script saved a model to a file, "mnist_convnet.keras"; the training script loads the model from disk and then
+evaluates the model using the MNIST test images
+
+```python
+model.evaluate(test_images, test_labels, callbacks=[callback])
+```
+
+## Running the `test.py` Script
+Running `python test.py` will evaluate the model and push test metrics to the pushgateway.
 The test/evaluation metrics are emitted with a `gangplank_test` prefix
 
 ```
@@ -103,3 +57,5 @@ Some information that can be gleaned from the metrics is that:
  * It took 2.23 seconds to evaluate the 10,000 test samples
  * There are 104,202 model weights
  * 1122 model weights have a value less than -0.3
+
+The same metrics can be queried via the [Prometheus dashboard](http://localhost:9090) 
