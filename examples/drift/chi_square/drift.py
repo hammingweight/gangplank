@@ -16,6 +16,9 @@ test_images = test_images.astype("float32") / 255
 
 
 def get_drift_metrics(_X, Y):
+    # The chi-square test isn't reliable for small samples; needing 5+
+    # values per bucket is a good heuristic. Since we have 10 buckets, we'll
+    # need at least 50 values in a batch.
     if len(Y) < 50:
         return gangplank.Drift()
     buckets = [0] * 10
