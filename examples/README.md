@@ -1,7 +1,19 @@
 # Examples
+## Preqrequisites for running the Examples
+You'll need
+ * Python 3.10+
+ * [Docker](https://www.docker.com)
+
+You can then checkout the Gangplank source and example code
+
+```bash
+git clone https://github.com/hammingweight/gangplank.git
+cd gangplank/examples 
+```
+
 ## Running Prometheus and a Pushgateway (PGW) Locally
 The Gangplank examples require that you run a Prometheus server bound to `127.0.0.1:9090` and a Prometheus pushgateway that is listening
-on `127.0.0.1:9091`. If you've installed [Docker](https://www.docker.com/), you can run `./start_prometheus.sh` to start a server, a gateway and,
+on `127.0.0.1:9091`. If you've installed Docker, you can run `./start_prometheus.sh` to start a server, a gateway and,
 additionally, a Prometheus alertmanager
 
 ```
