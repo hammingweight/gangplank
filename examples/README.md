@@ -1,5 +1,5 @@
 # Examples
-## Preqrequisites for running the Examples
+## Prerequisites for running the Examples
 You'll need
  * Python 3.10+
  * [Docker](https://www.docker.com)
