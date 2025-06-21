@@ -21,7 +21,7 @@ drift_detector = cd.MMDDriftOnline(
 ```
 
 where `preds` are the predictions for 20,000 training images from the MNIST dataset. The `window_size=200` argument is used to
-specify that a rolling window of 200 predicted values must be used to detect whether drift has occurred.
+specify that a sliding window of 200 predicted values must be used to detect whether drift has occurred.
 
 **Note:** This example is artificial since we know that the expected distribution should be a uniform distribution of the values 0 to 9. `alibi-detect` provides
 heavier machinery than is actually needed. The [chi-square](../chi_square) example uses more elementary statistics than is used here.
