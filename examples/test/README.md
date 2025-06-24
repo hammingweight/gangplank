@@ -32,33 +32,33 @@ The test/evaluation metrics are emitted with a `gangplank_test` prefix
 
 ```
 $ curl -s http://localhost:9091/metrics | grep -v '#' | grep gangplank_test
-gangplank_test_accuracy{instance="",job="mnist"} 0.9896000027656555
-gangplank_test_elapsed_time_seconds{instance="",job="mnist"} 2.2292304039001465
-gangplank_test_loss{instance="",job="mnist"} 0.041046421974897385
+gangplank_test_accuracy{instance="",job="mnist"} 0.9901000261306763
+gangplank_test_elapsed_time_seconds{instance="",job="mnist"} 1.7885098457336426
+gangplank_test_loss{instance="",job="mnist"} 0.03201884403824806
 gangplank_test_model_parameters_count{instance="",job="mnist"} 104202
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.3"} 1122
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.25"} 2456
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.2"} 5280
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.15"} 10759
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.1"} 20734
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.05"} 36836
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="0"} 58190
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.05"} 77984
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.1"} 91480
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.15"} 99129
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.2"} 102498
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.25"} 103643
-gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.3"} 104013
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.3"} 279
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.25"} 728
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.2"} 1969
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.15"} 5192
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.1"} 12984
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="-0.05"} 30828
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="0"} 57258
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.05"} 82053
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.1"} 96056
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.15"} 101798
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.2"} 103518
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.25"} 104010
+gangplank_test_model_weights_bucket{instance="",job="mnist",le="0.3"} 104147
 gangplank_test_model_weights_bucket{instance="",job="mnist",le="+Inf"} 104202
 gangplank_test_model_weights_sum{instance="",job="mnist"} 0
 gangplank_test_model_weights_count{instance="",job="mnist"} 104202
-gangplank_test_model_weights_created{instance="",job="mnist"} 1.7488593562987614e+09
+gangplank_test_model_weights_created{instance="",job="mnist"} 1.7507642169909902e+09
 ```
 
 Some information that can be gleaned from the metrics is that:
- * The model accuracy is 98.96%
- * It took 2.23 seconds to evaluate the 10,000 test samples
+ * The model accuracy is 99.01%
+ * It took 1.79 seconds to evaluate the 10,000 test samples
  * There are 104,202 model weights
- * 1122 model weights have a value less than -0.3
+ * 279 model weights have a value less than -0.3
 
 The same metrics can be queried via the [Prometheus dashboard](http://localhost:9090) 

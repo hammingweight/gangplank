@@ -64,17 +64,17 @@ metrics with the prefix `gangplank_train` from the PGW
 
 ```
 $ curl -s http://localhost:9091/metrics | grep gangplank_train | grep -v '#' 
-gangplank_train_accuracy{instance="",job="mnist"} 0.9448703527450562
-gangplank_train_elapsed_time_seconds{instance="",job="mnist"} 53.397014141082764
+gangplank_train_accuracy{instance="",job="mnist"} 0.9451481699943542
+gangplank_train_elapsed_time_seconds{instance="",job="mnist"} 35.109450817108154
 gangplank_train_epochs_count{instance="",job="mnist"} 1
-gangplank_train_loss{instance="",job="mnist"} 0.18397289514541626
+gangplank_train_loss{instance="",job="mnist"} 0.1816869080066681
 gangplank_train_model_parameters_count{instance="",job="mnist"} 104202
-gangplank_train_val_accuracy{instance="",job="mnist"} 0.9835000038146973
-gangplank_train_val_loss{instance="",job="mnist"} 0.05415859818458557
+gangplank_train_val_accuracy{instance="",job="mnist"} 0.984333336353302
+gangplank_train_val_loss{instance="",job="mnist"} 0.05358922854065895
 ```
 The metrics include the training and validation loss and accuracy, the number of completed epochs, the running time and the number of weights (parameters) in the model.
 
-The Prometheus server dashboard at [http://localhost:9090](http://localhost:9090/query) can be used to query or view the metrics. For example, the image shows that validation loss (`gangplank_train_val_loss`) reached a minimum at 09:38 (epoch 13) and the training
+The Prometheus server dashboard at [http://localhost:9090](http://localhost:9090/query) can be used to query or view the metrics. For example, the image shows that validation loss (`gangplank_train_val_loss`) reached a minimum at 11:04 (epoch 7) and the training
 then started to overfit the data.
 
 ![Training validation loss](./train_val_loss.png)
