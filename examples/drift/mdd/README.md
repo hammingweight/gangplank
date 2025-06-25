@@ -1,7 +1,7 @@
 # Drift Detection using Alibi Detect
 ## Alibi Detect
 Alibi detect is a Python library that provides drift detection tests. Alibi's tests can be classified as online (realtime)
-or batch (offline). In this example, we'll use the online MDD (maximum mean discrepancy) test, `MMDDriftOnline`. 
+or batch (offline). In this example, we'll use the online MMD (maximum mean discrepancy) test, `MMDDriftOnline`. 
 The `alibi-detect` and `pytorch` libraries must be installed to run this drift detection code
 
 ```

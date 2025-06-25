@@ -49,7 +49,7 @@ The example code is more instructive.
 
 ## Examples
 ### Measuring Drift with Alibi Detect
-The [MDD example](./mdd/) uses the MMD Online drift detector from the `alibi detect` package to measure drift.
+The [MMD example](./mdd/) uses the MMD Online drift detector from the `alibi detect` package to measure drift.
 
 ### Measuring Drift With SciPy Stats
 The [chi_square example](./chi_square/) uses the `scipy.stats` module's `chisquare` function to measure drift.
