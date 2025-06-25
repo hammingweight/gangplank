@@ -3,15 +3,14 @@
 Over time, the statistical properties of the data in production may drift from the data that was used in training. Drift may take several forms:
  * Data drift; the distribution of input data differs from the input data used for training.
  * Prediction drift; the statistics of output data has drifted from the output seen in training. Prediction drift is also known as label drift when the ML system produces categorical data.
- * Concept drift; the relationship beteen input and output data has changed since the model has trained.
+ * Concept drift; the relationship beteen input and output data has changed since the model was trained.
 
 There are also several ways to expose drift as a metric:
  * A *p*-value (i.e. a probability that quantifies the probability of observing data under an assumption that the data conforms to some statistical distribution)
  * A test statistic (a measure of the "distance" between an observation and the expected distribution)
  * A count of the number of times that input or output data drifted from the expected distribution
 
-Gangplank is agnostic about the form of drift and the metric used to quantify the drift; it simply provides a means of exposing the
-metric to Prometheus.
+Gangplank can expose either data (input) or prediction (output) drift metrics; it is up to the user to determine which drift can be measured and how to detect the drift.
 
 ## The `Drift` Class
 A `Drift` object must be created to report drift
