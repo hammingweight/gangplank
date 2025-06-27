@@ -3,7 +3,7 @@
 Over time, the statistical properties of the data in production may drift from the data that was used in training. Drift may take several forms:
  * Data drift; the distribution of input data differs from the input data used for training.
  * Prediction drift; the statistics of output data have drifted from the output seen in training. Prediction drift is also known as label drift when the ML system produces categorical data.
- * Concept drift; the relationship beteen input and output data has changed since the model was trained.
+ * Concept (aka model) drift; the relationship beteen input and output data has changed since the model was trained.
 
 There are also several ways to expose drift as a metric:
  * A *p*-value (i.e. a probability that quantifies the probability of observing data under an assumption that the data conforms to some statistical distribution)
