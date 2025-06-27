@@ -33,7 +33,7 @@ A deployed model can expose the following metrics:
  * (Optionally) Drift metrics; e.g. a *p*-value
 
 ## Installing Gangplank
-Gangplank can be installed from PyPI
+Gangplank can be installed from [PyPI](https://pypi.org/project/gangplank/)
 
 ```
 pip install gangplank
