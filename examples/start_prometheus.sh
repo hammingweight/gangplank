@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -e
 SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+if command -v "realpath" &>/dev/null; then
+    # Best to ensure absolute paths for Docker's bind mounts.
+    SCRIPT_DIR=$(realpath "$SCRIPT_DIR")
+fi
 
 docker run --rm --name prometheus -v $SCRIPT_DIR/prometheus:/etc/prometheus/ -d --network host prom/prometheus
 docker run --rm --name pgw -d --network host prom/pushgateway
