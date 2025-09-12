@@ -56,7 +56,7 @@ The inputs to the CNN are batches of tensors of shape (28, 28, 1) and the output
 
 ## Usage Examples
 [Training:](./train/) This sample code trains a model to identify handrwitten digits from the
-MNIST dataset and exposes training metrics to Prometheus. Publishing training metrics uses Gangplank's [`TrainTestExporter](../src/gangplank/train_test_exporter.py) class that extends the `keras.callbacks.Callback` class.
+MNIST dataset and exposes training metrics to Prometheus. Publishing training metrics uses Gangplank's [`TrainTestExporter`](../src/gangplank/train_test_exporter.py) class that extends the `keras.callbacks.Callback` class.
 This script must be run before running the other examples since it saves a Keras model to disk that is needed for the remaining examples. 
 
 [Testing:](./test/) This example evaluates the model created by the training script and exports the metrics to Prometheus. The sample code demonstrates
